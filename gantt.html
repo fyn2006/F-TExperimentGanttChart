@@ -1,0 +1,68 @@
+<section class="gantt-section">
+  <h2>Project Gantt Chart</h2>
+
+  <div class="gantt-chart">
+    <div class="gantt-header task">Task</div>
+    <div class="gantt-header">W1</div>
+    <div class="gantt-header">W2</div>
+    <div class="gantt-header">W3</div>
+    <div class="gantt-header">W4</div>
+    <div class="gantt-header">W5</div>
+    <div class="gantt-header">W6</div>
+
+    <div class="task">Literature Review</div>
+    <div class="bar" style="grid-column: 2 / 4;">Review sources</div>
+
+    <div class="task">Experimental Design</div>
+    <div class="bar" style="grid-column: 3 / 5;">Plan setup</div>
+
+    <div class="task">Equipment Setup</div>
+    <div class="bar" style="grid-column: 4 / 6;">Build/test</div>
+
+    <div class="task">Sample Preparation</div>
+    <div class="bar" style="grid-column: 5 / 7;">Prepare soil</div>
+
+    <div class="task">Testing</div>
+    <div class="bar" style="grid-column: 6 / 8;">Collect data</div>
+  </div>
+</section>
+
+<style>
+  .gantt-section {
+    max-width: 900px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+  }
+
+  .gantt-chart {
+    display: grid;
+    grid-template-columns: 220px repeat(6, 1fr);
+    gap: 6px;
+    align-items: center;
+  }
+
+  .gantt-header {
+    font-weight: bold;
+    text-align: center;
+    background: #222;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  .task {
+    font-weight: bold;
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 6px;
+  }
+
+  .bar {
+    background: #4f8cff;
+    color: white;
+    padding: 10px;
+    border-radius: 20px;
+    text-align: center;
+    grid-row: auto;
+  }
+</style>
