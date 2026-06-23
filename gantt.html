@@ -22,20 +22,31 @@ body{
     border-bottom:1px solid #e5e7eb;
 }
 
-/* LAYOUT */
+/* MAIN LAYOUT */
 .container{
     display:flex;
     height:calc(100vh - 60px);
+    overflow:hidden;
 }
 
-/* LEFT PANEL (FIXED) */
+/* ✅ FIXED LEFT PANEL (LOCKED) */
 .left{
     width:420px;
+    min-width:420px;
+    max-width:420px;
+
     background:white;
     border-right:1px solid #e5e7eb;
-    overflow:auto;
+
+    position:sticky;
+    left:0;
+    top:0;
+
+    overflow-y:auto;
+    z-index:10;
 }
 
+/* TASK ROWS */
 .task-row{
     display:grid;
     grid-template-columns: 1fr 110px 110px 110px;
@@ -50,19 +61,19 @@ body{
     padding:4px;
 }
 
-/* RIGHT PANEL (SCROLLABLE TIMELINE) */
+/* RIGHT SIDE SCROLL AREA */
 .right{
     flex:1;
     overflow:auto;
     padding:20px;
 }
 
-/* THIS IS THE KEY FIX */
-.timeline-scroll{
-    min-width:1200px; /* forces horizontal scroll */
+/* THIS is the scroll container */
+.timeline{
+    min-width:1200px;
 }
 
-/* HEADER */
+/* HEADER ROW */
 .timeline-header{
     display:flex;
     font-size:11px;
@@ -71,18 +82,19 @@ body{
 }
 
 .timeline-header div{
-    width:120px; /* FIX: fixed width prevents overlap */
-    text-align:center;
+    width:120px;
     flex-shrink:0;
+    text-align:center;
 }
 
-/* GANTT ROW */
+/* ROWS */
 .gantt-row{
     display:flex;
     align-items:center;
     margin-bottom:10px;
 }
 
+/* TASK LABEL (VISUALLY LOCKED WITH LEFT PANEL) */
 .label{
     width:200px;
     font-size:13px;
@@ -97,9 +109,10 @@ body{
     background:#f1f5f9;
     border-radius:8px;
     width:100%;
-    min-width:1000px; /* enables scroll */
+    min-width:1000px;
 }
 
+/* BARS */
 .bar{
     position:absolute;
     height:100%;
@@ -110,6 +123,7 @@ body{
 .progress{ background:#2563eb; }
 .complete{ background:#16a34a; }
 
+/* BUTTON */
 button{
     margin:10px;
     padding:8px 12px;
@@ -128,17 +142,19 @@ button{
 
 <div class="container">
 
-<!-- LEFT -->
+<!-- LOCKED TASK PANEL -->
 <div class="left">
 <button onclick="addTask()">+ Add Task</button>
 <div id="taskList"></div>
 </div>
 
-<!-- RIGHT -->
+<!-- SCROLLABLE TIMELINE -->
 <div class="right">
-<div class="timeline-scroll">
+<div class="timeline">
+
 <div id="timelineHeader" class="timeline-header"></div>
 <div id="gantt"></div>
+
 </div>
 </div>
 
@@ -163,7 +179,7 @@ function addTask(){
     render();
 }
 
-/* LEFT */
+/* LEFT PANEL */
 function renderLeft(){
     const el = document.getElementById("taskList");
     el.innerHTML="";
@@ -193,7 +209,7 @@ function renderLeft(){
     });
 }
 
-/* RIGHT */
+/* TIMELINE */
 function renderGantt(){
 
     const gantt = document.getElementById("gantt");
@@ -214,7 +230,7 @@ function renderGantt(){
 
     const totalDays = (max-min)/(1000*60*60*24)+1;
 
-    const step = Math.ceil(totalDays/10); // nice spacing
+    const step = Math.ceil(totalDays/10);
 
     for(let i=0;i<totalDays;i+=step){
         let d = new Date(min);
