@@ -13,6 +13,7 @@ body{
     background:#f6f7fb;
 }
 
+/* HEADER */
 .header{
     padding:18px 24px;
     font-size:18px;
@@ -21,13 +22,13 @@ body{
     border-bottom:1px solid #e5e7eb;
 }
 
-/* layout */
+/* LAYOUT */
 .container{
     display:flex;
     height:calc(100vh - 60px);
 }
 
-/* LEFT */
+/* LEFT PANEL (FIXED) */
 .left{
     width:420px;
     background:white;
@@ -49,29 +50,33 @@ body{
     padding:4px;
 }
 
-/* RIGHT */
+/* RIGHT PANEL (SCROLLABLE TIMELINE) */
 .right{
     flex:1;
     overflow:auto;
     padding:20px;
 }
 
-/* timeline header */
+/* THIS IS THE KEY FIX */
+.timeline-scroll{
+    min-width:1200px; /* forces horizontal scroll */
+}
+
+/* HEADER */
 .timeline-header{
     display:flex;
-    margin-left:200px;
     font-size:11px;
     color:#666;
-    margin-bottom:8px;
+    margin-bottom:10px;
 }
 
 .timeline-header div{
-    flex:1;
+    width:120px; /* FIX: fixed width prevents overlap */
     text-align:center;
-    min-width:80px; /* FIX: prevents overlap */
+    flex-shrink:0;
 }
 
-/* gantt rows */
+/* GANTT ROW */
 .gantt-row{
     display:flex;
     align-items:center;
@@ -82,16 +87,17 @@ body{
     width:200px;
     font-size:13px;
     padding-right:10px;
+    flex-shrink:0;
 }
 
-/* bar area */
+/* BAR AREA */
 .bar-area{
     position:relative;
-    flex:1;
     height:26px;
     background:#f1f5f9;
     border-radius:8px;
-    min-width:600px; /* FIX: prevents compression overlap */
+    width:100%;
+    min-width:1000px; /* enables scroll */
 }
 
 .bar{
@@ -104,7 +110,6 @@ body{
 .progress{ background:#2563eb; }
 .complete{ background:#16a34a; }
 
-/* button */
 button{
     margin:10px;
     padding:8px 12px;
@@ -123,16 +128,18 @@ button{
 
 <div class="container">
 
-<!-- LEFT PANEL -->
+<!-- LEFT -->
 <div class="left">
 <button onclick="addTask()">+ Add Task</button>
 <div id="taskList"></div>
 </div>
 
-<!-- RIGHT PANEL -->
+<!-- RIGHT -->
 <div class="right">
+<div class="timeline-scroll">
 <div id="timelineHeader" class="timeline-header"></div>
 <div id="gantt"></div>
+</div>
 </div>
 
 </div>
@@ -156,7 +163,7 @@ function addTask(){
     render();
 }
 
-/* LEFT PANEL */
+/* LEFT */
 function renderLeft(){
     const el = document.getElementById("taskList");
     el.innerHTML="";
@@ -186,7 +193,7 @@ function renderLeft(){
     });
 }
 
-/* RIGHT PANEL */
+/* RIGHT */
 function renderGantt(){
 
     const gantt = document.getElementById("gantt");
@@ -207,15 +214,14 @@ function renderGantt(){
 
     const totalDays = (max-min)/(1000*60*60*24)+1;
 
-    /* FIX: weekly spacing, no overlap */
-    const step = Math.max(1, Math.floor(totalDays/8));
+    const step = Math.ceil(totalDays/10); // nice spacing
 
     for(let i=0;i<totalDays;i+=step){
         let d = new Date(min);
         d.setDate(d.getDate()+i);
 
         let div = document.createElement("div");
-        div.innerText = d.toLocaleDateString("en-CA",{month:"short", day:"numeric"});
+        div.innerText = d.toLocaleDateString("en-CA",{month:"short",day:"numeric"});
         header.appendChild(div);
     }
 
