@@ -1,4 +1,4 @@
-l>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@ l>
             background: #f8fafc;
             color: #0f172a;
         }
-        /* HEADER (UVic Blue & Gold Strip Theme) */
+        /* HEADER (UVic Corporate Colors) */
         .header {
             padding: 16px 24px;
             background: #002855; /* UVic Dark Blue */
@@ -32,24 +32,28 @@ l>
             color: #cbd5e1;
             margin-top: 3px;
         }
-        /* TIMELINE DROPDOWN PANEL */
+        /* TOP CONTROLS */
         .controls {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 14px;
-            border-radius: 8px;
-            backdrop-filter: blur(4px);
+            gap: 12px;
         }
-        .controls label {
+        .window-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        .window-selector label {
             font-size: 12px;
             font-weight: 600;
             color: #f1f5f9;
         }
-        .controls select {
-            padding: 6px 10px;
-            border-radius: 6px;
+        .window-selector select {
+            padding: 4px 8px;
+            border-radius: 4px;
             border: 1px solid rgba(255,255,255,0.2);
             background: white;
             font-family: Inter, sans-serif;
@@ -58,7 +62,21 @@ l>
             color: #002855;
             cursor: pointer;
         }
-        /* APPLICATION WORKSPACE LAYOUT */
+        .btn-save {
+            background: #F5A623;
+            color: #002855;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-save:hover {
+            background: #e0921b;
+        }
+        /* PAGE LAYOUT */
         .app-layout {
             display: flex;
             max-width: 1600px;
@@ -66,9 +84,9 @@ l>
             padding: 0 24px;
             gap: 24px;
         }
-        /* LEFT TASK CONFIGURATION MANAGEMENT EDITOR */
+        /* LEFT TASK EDITOR LIST */
         .editor-panel {
-            width: 380px;
+            width: 360px;
             background: white;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
@@ -84,6 +102,11 @@ l>
             color: #002855;
             border-bottom: 2px solid #f1f5f9;
             padding-bottom: 8px;
+        }
+        .task-list-wrapper {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 4px;
         }
         .task-edit-card {
             background: #f8fafc;
@@ -113,7 +136,7 @@ l>
             margin-bottom: 8px;
             color: #334155;
         }
-        /* RIGHT VISUAL CHART AREA */
+        /* RIGHT CHART VIEW */
         .chart-container {
             flex: 1;
             background: white;
@@ -123,7 +146,6 @@ l>
             overflow: hidden;
             height: fit-content;
         }
-        /* SCROLLABLE TABLE WRAPPER */
         .table-wrapper {
             overflow-x: auto;
             position: relative;
@@ -133,7 +155,7 @@ l>
             min-width: 800px;
             border-collapse: collapse;
         }
-        /* STICKY LEFT COLUMN FOR TASKS */
+        /* STICKY TASK COLS */
         .th-task, .td-task {
             position: sticky;
             left: 0;
@@ -159,7 +181,7 @@ l>
             border-bottom: 1px solid #f1f5f9;
             box-shadow: 4px 0 8px -4px rgba(0,0,0,0.05);
         }
-        /* TIMELINE COLUMN */
+        /* TIMELINE TRACKS */
         .th-timeline, .td-timeline {
             padding: 16px;
             box-sizing: border-box;
@@ -173,7 +195,6 @@ l>
         .td-timeline {
             border-bottom: 1px solid #f1f5f9;
         }
-        /* TIMELINE HEADER DATES */
         .date-label {
             position: absolute;
             font-size: 11px;
@@ -182,7 +203,6 @@ l>
             transform: translateX(-50%);
             white-space: nowrap;
         }
-        /* BAR TRACK GRAPHICS */
         .bar-area {
             position: relative;
             height: 34px;
@@ -206,12 +226,11 @@ l>
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            transition: all 0.2s ease;
         }
-        /* BRANDED UVIC THEME STATUS BADGES */
-        .inprogress { background: #002855; color: #fff; }                 /* UVic Corporate Blue */
-        .notstarted { background: #BA0C2F; color: #fff; }                 /* UVic Accent Red */
-        .complete   { background: #F5A623; color: #002855; }              /* UVic Vibrant Gold */
+        /* STATUS COLORS */
+        .inprogress { background: #002855; color: #fff; } /* UVic Blue */
+        .notstarted { background: #BA0C2F; color: #fff; } /* UVic Red */
+        .complete   { background: #F5A623; color: #002855; } /* UVic Gold */
     </style>
 </head>
 <body>
@@ -222,25 +241,26 @@ l>
             <div class="subtitle">Pot-Cover Experiment Gantt Chart System</div>
         </div>
         <div class="controls">
-            <label for="timelineView">Timeline Window:</label>
-            <select id="timelineView" onchange="updateTimelineWindow()">
-                <option value="14">2 Weeks</option>
-                <option value="30">1 Month</option>
-                <option value="60" selected>2 Months (Fits All Tasks)</option>
-            </select>
+            <div class="window-selector">
+                <label for="timelineView">View Window:</label>
+                <select id="timelineView" onchange="updateTimelineWindow()">
+                    <option value="14">2 Weeks</option>
+                    <option value="30">1 Month</option>
+                    <option value="60" selected>2 Months (Fits All)</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="saveToStorage()">Save Changes</button>
         </div>
     </div>
 
     <div class="app-layout">
-        <!-- CHRONOLOGICAL DATA EDITOR SIDEBAR -->
+        <!-- EDITING PANEL -->
         <div class="editor-panel">
-            <h3>Manage Experiment Tasks</h3>
-            <div id="editorFormContainer">
-                <!-- Javascript maps data here -->
-            </div>
+            <h3>Modify Task Properties</h3>
+            <div id="editorFormContainer" class="task-list-wrapper"></div>
         </div>
 
-        <!-- VISUAL DIAGRAM TRACK -->
+        <!-- VISUAL CHART -->
         <div class="chart-container">
             <div class="table-wrapper">
                 <table class="gantt-table">
@@ -252,17 +272,15 @@ l>
                             </th>
                         </tr>
                     </thead>
-                    <tbody id="ganttBody">
-                        <!-- JavaScript rendering element hook -->
-                    </tbody>
+                    <tbody id="ganttBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
-        // Core Project State Array Engine
-        let tasks = [
+        // Core Project Datasets
+        const defaultTasks = [
             {name:"Obtain Pipe Cap", start:"2026-06-22", end:"2026-06-26", status:"In Progress"},
             {name:"Assemble Apparatus", start:"2026-06-27", end:"2026-07-05", status:"Not Started"},
             {name:"Install Bender Elements", start:"2026-07-06", end:"2026-07-12", status:"Not Started"},
@@ -271,31 +289,28 @@ l>
             {name:"Process Data", start:"2026-08-01", end:"2026-08-10", status:"Not Started"}
         ];
 
-        // Fixed project anchor timeline frame start point
-        let minDate = new Date("2026-06-22");
-        let currentWindowDays = 60; 
+        let tasks = [];
+        let currentWindowDays = 60;
 
-        // Trigger dynamic view window resizing state updates
-        function updateTimelineWindow() {
-            const dropdown = document.getElementById("timelineView");
-            currentWindowDays = parseInt(dropdown.value);
-            render();
+        // SAFE DATE PARSING (Prevents broken Timezone shifts)
+        function parseLocalDate(dateString) {
+            const parts = dateString.split('-');
+            // Months are 0-indexed in JS
+            return new Date(parts[0], parts[1] - 1, parts[2]);
         }
 
-        // Live modification monitor pipeline to sync local object array values on change
-        function updateTaskData(index, field, value) {
-            tasks[index][field] = value;
-            renderGanttChartOnly(); // Redraw only the visual bars to preserve text focus
+        // LOAD DATA
+        function initData() {
+            const saved = localStorage.getItem('uvic_gantt_tasks');
+            if (saved) {
+                tasks = JSON.parse(saved);
+            } else {
+                tasks = JSON.parse(JSON.stringify(defaultTasks));
+            }
         }
 
-        // Main generator method to parse interface forms
-        function buildEditorForm() {
-            const container = document.getElementById("editorFormContainer");
-            container.innerHTML = "";
-
-            tasks.forEach((t, index) => {
-                const card = document.createElement("div");
-                card.className = "task-edit-card";
-
-                // Title Parameter Input Field Element
-Use code with caution.const labelName = document.createElement("label");labelName.innerText = Task #${index + 1} Name;const inputName = document.createElement("input");inputName.type = "text";inputName.value = t.name;inputName.oninput = (e) => {updateTaskData(index, 'name', e.target.value);document.getElementById(task-label-${index}).innerText = e.target.value;};// Start Chronology Selector Calendarconst labelStart = document.createElement("label");labelStart.innerText = "Start Date";const inputStart = document.createElement("input");inputStart.type = "date";inputStart.value = t.start;inputStart.onchange = (e) => updateTaskData(index, 'start', e.target.value);// End Chronology Selector Calendarconst labelEnd = document.createElement("label");labelEnd.innerText = "End Date";const inputEnd = document.createElement("input");inputEnd.type = "date";inputEnd.value = t.end;inputEnd.onchange = (e) => updateTaskData(index, 'end', e.target.value);// Project Lifecycle State Options Selector dropdown UI elementconst labelStatus = document.createElement("label");labelStatus.innerText = "Status";const selectStatus = document.createElement("select");["Not Started", "In Progress", "Complete"].forEach(opt => {const o = document.createElement("option");o.value = opt;o.innerText = opt;if(t.status === opt) o.selected = true;selectStatus.appendChild(o);});selectStatus.onchange = (e) => updateTaskData(index, 'status', e.target.value);// Append structural nodes to tree layout component cardscard.appendChild(labelName);card.appendChild(inputName);card.appendChild(labelStart);card.appendChild(inputStart);card.appendChild(labelEnd);card.appendChild(inputEnd);card.appendChild(labelStatus);card.appendChild(selectStatus);container.appendChild(card);});}// Draws only the chart track matrix grid architecturefunction renderGanttChartOnly() {const ganttBody = document.getElementById("ganttBody");const header = document.getElementById("timelineHeader");ganttBody.innerHTML = "";header.innerHTML = "";const maxTimelineDate = new Date(minDate);maxTimelineDate.setDate(maxTimelineDate.getDate() + currentWindowDays - 1);/* 1. COMPUTE POSITION MARKERS FOR GRAPH HEADER */const totalLabels = 6;const stepDays = Math.ceil(currentWindowDays / totalLabels);for (let i = 0; i < currentWindowDays; i += stepDays) {let d = new Date(minDate);d.setDate(d.getDate() + i);let label = document.createElement("div");label.className = "date-label";label.innerText = d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });label.style.left = (i / currentWindowDays * 100) + "%";header.appendChild(label);}/* 2. MAP CORRESPONDING CHRONOLOGICAL ENTRIES FOR DATA BARS */tasks.forEach((t, index) => {const tr = document.createElement("tr");// Static Row Column Label Tracker Elementsconst tdTask = document.createElement("td");tdTask.className = "td-task";tdTask.id = task-label-${index};tdTask.innerText = t.name;tr.appendChild(tdTask);// Right Layout Bar Tracksconst tdTimeline = document.createElement("td");tdTimeline.className = "td-timeline";const area = document.createElement("div");area.className = "bar-area";const taskStart = new Date(t.start);const taskEnd = new Date(t.end);// Visibility filtering matrix boundary parsing algorithmsif (taskEnd >= minDate && taskStart <= maxTimelineDate) {const visualStart = taskStart < minDate ? minDate : taskStart;const visualEnd = taskEnd > maxTimelineDate ? maxTimelineDate : taskEnd;const startOffset = (visualStart - minDate) / (1000 * 60 * 60 * 24);const duration = ((visualEnd - visualStart) / (1000 * 60 * 60 * 24)) + 1;const bar = document.createElement("div");bar.className = "bar " + t.status.toLowerCase().replace(" ", "");bar.style.left = (startOffset / currentWindowDays * 100) + "%";bar.style.width = (duration / currentWindowDays * 100) + "%";bar.innerText = t.status;bar.title = ${t.name}: ${t.start} to ${t.end};area.appendChild(bar);}tdTimeline.appendChild(area);tr.appendChild(tdTimeline);ganttBody.appendChild(tr);});}// Full application refresh rendering system coordinatorfunction render() {buildEditorForm();renderGanttChartOnly();}// Initial system initiation trigger callback executionrender();
+        // SAVE DATA
+        function saveToStorage() {
+            localStorage.setItem('uvic_gantt_tasks', JSON.stringify(tasks));
+            alert("Success! Project schedule saved to browser memory.");
+Use code with caution.}function updateTimelineWindow() {currentWindowDays = parseInt(document.getElementById("timelineView").value);renderGanttChartOnly();}function updateTaskData(index, field, value) {tasks[index][field] = value;renderGanttChartOnly();}// SIDEBAR FORM BUILDERfunction buildEditorForm() {const container = document.getElementById("editorFormContainer");container.innerHTML = "";tasks.forEach((t, index) => {const card = document.createElement("div");card.className = "task-edit-card";const labelName = document.createElement("label");labelName.innerText = Task #${index + 1};const inputName = document.createElement("input");inputName.type = "text";inputName.value = t.name;inputName.oninput = (e) => {updateTaskData(index, 'name', e.target.value);document.getElementById(task-label-${index}).innerText = e.target.value;};const labelStart = document.createElement("label");labelStart.innerText = "Start Date";const inputStart = document.createElement("input");inputStart.type = "date";inputStart.value = t.start;inputStart.onchange = (e) => updateTaskData(index, 'start', e.target.value);const labelEnd = document.createElement("label");labelEnd.innerText = "End Date";const inputEnd = document.createElement("input");inputEnd.type = "date";inputEnd.value = t.end;inputEnd.onchange = (e) => updateTaskData(index, 'end', e.target.value);const labelStatus = document.createElement("label");labelStatus.innerText = "Status";const selectStatus = document.createElement("select");["Not Started", "In Progress", "Complete"].forEach(opt => {const o = document.createElement("option");o.value = opt;o.innerText = opt;if(t.status === opt) o.selected = true;selectStatus.appendChild(o);});selectStatus.onchange = (e) => updateTaskData(index, 'status', e.target.value);card.appendChild(labelName);card.appendChild(inputName);card.appendChild(labelStart);card.appendChild(inputStart);card.appendChild(labelEnd);card.appendChild(inputEnd);card.appendChild(labelStatus);card.appendChild(selectStatus);container.appendChild(card);});}// VISUAL GRAPH CHART DRAW ENGINEfunction renderGanttChartOnly() {const ganttBody = document.getElementById("ganttBody");const header = document.getElementById("timelineHeader");ganttBody.innerHTML = "";header.innerHTML = "";// Find project base anchor date from datasetlet allDates = [];tasks.forEach(t => {if(t.start) allDates.push(parseLocalDate(t.start));if(t.end) allDates.push(parseLocalDate(t.end));});if(allDates.length === 0) return;const minDate = new Date(Math.min(...allDates));const maxTimelineDate = new Date(minDate);maxTimelineDate.setDate(maxTimelineDate.getDate() + currentWindowDays - 1);/* 1. DRAW TIMELINE DATES */const totalLabels = 6;const stepDays = Math.ceil(currentWindowDays / totalLabels);for (let i = 0; i < currentWindowDays; i += stepDays) {let d = new Date(minDate);d.setDate(d.getDate() + i);let label = document.createElement("div");label.className = "date-label";label.innerText = d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });label.style.left = (i / currentWindowDays * 100) + "%";header.appendChild(label);}/* 2. DRAW VISUAL PROJECT BARS */tasks.forEach((t, index) => {const tr = document.createElement("tr");const tdTask = document.createElement("td");tdTask.className = "td-task";tdTask.id = task-label-${index};tdTask.innerText = t.name;tr.appendChild(tdTask);const tdTimeline = document.createElement("td");tdTimeline.className = "td-timeline";const area = document.createElement("div");area.className = "bar-area";if (t.start && t.end) {const taskStart = parseLocalDate(t.start);const taskEnd = parseLocalDate(t.end);if (taskEnd >= minDate && taskStart <= maxTimelineDate) {const visualStart = taskStart < minDate ? minDate : taskStart;const visualEnd = taskEnd > maxTimelineDate ? maxTimelineDate : taskEnd;const startOffset = (visualStart - minDate) / (1000 * 60 * 60 * 24);const duration = ((visualEnd - visualStart) / (1000 * 60 * 60 * 24)) + 1;const bar = document.createElement("div");bar.className = "bar " + t.status.toLowerCase().replace(" ", "");bar.style.left = (startOffset / currentWindowDays * 100) + "%";bar.style.width = (duration / currentWindowDays * 100) + "%";bar.innerText = t.status;bar.title = ${t.name}: ${t.start} to ${t.end};area.appendChild(bar);}}tdTimeline.appendChild(area);tr.appendChild(tdTimeline);ganttBody.appendChild(tr);});}// RUN SYSTEMinitData();buildEditorForm();renderGanttChartOnly();
