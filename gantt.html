@@ -16,6 +16,9 @@
             padding: 16px 22px;
             background: white;
             border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .title {
             font-size: 18px;
@@ -25,6 +28,31 @@
             font-size: 12px;
             color: #64748b;
             margin-top: 2px;
+        }
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .controls label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+        .controls select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-family: Inter, sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
         }
         /* MAIN CHART AREA */
         .chart-container {
@@ -43,7 +71,7 @@
         }
         .gantt-table {
             width: 100%;
-            min-width: 900px;
+            min-width: 1000px;
             border-collapse: collapse;
         }
         /* STICKY LEFT COLUMN FOR TASKS */
@@ -69,7 +97,7 @@
             font-weight: 500;
             font-size: 14px;
             border-bottom: 1px solid #f1f5f9;
-            box-shadow: 4px 0 8px -4px rgba(0,0,0,0.05); /* subtle separator shadow */
+            box-shadow: 4px 0 8px -4px rgba(0,0,0,0.05);
         }
         /* TIMELINE COLUMN */
         .th-timeline, .td-timeline {
@@ -115,6 +143,9 @@
             font-weight: 600;
             letter-spacing: 0.5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .notstarted { background: #94a3b8; }
         .inprogress { background: #2563eb; }
@@ -124,8 +155,18 @@
 <body>
 
     <div class="header">
-        <div class="title">University of Victoria</div>
-        <div class="subtitle">Pot-Cover Experiment Gantt Chart</div>
+        <div>
+            <div class="title">University of Victoria</div>
+            <div class="subtitle">Pot-Cover Experiment Gantt Chart</div>
+        </div>
+        <div class="controls">
+            <label for="timelineView">Timeline Window:</label>
+            <select id="timelineView" onchange="updateTimelineWindow()">
+                <option value="14">2 Weeks</option>
+                <option value="30" selected>1 Month (Default)</option>
+                <option value="60">2 Months</option>
+            </select>
+        </div>
     </div>
 
     <div class="chart-container">
@@ -140,19 +181,32 @@
                     </tr>
                 </thead>
                 <tbody id="ganttBody">
-                    <!-- JavaScript will insert rows here -->
+                    <!-- JavaScript inserts rows here -->
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
+        // Project dataset updated with the two new requested tasks
         let tasks = [
             {name:"Obtain Pipe Cap", start:"2026-06-22", end:"2026-06-26", status:"In Progress"},
             {name:"Assemble Apparatus", start:"2026-06-27", end:"2026-07-05", status:"Not Started"},
             {name:"Install Bender Elements", start:"2026-07-06", end:"2026-07-12", status:"Not Started"},
-            {name:"System Testing", start:"2026-07-13", end:"2026-07-20", status:"Not Started"}
+            {name:"System Testing", start:"2026-07-13", end:"2026-07-20", status:"Not Started"},
+            {name:"Run Experiment", start:"2026-07-21", end:"2026-07-31", status:"Not Started"},
+            {name:"Process Data", start:"2026-08-01", end:"2026-08-10", status:"Not Started"}
         ];
+
+        // Global timeline settings
+        let minDate = new Date("2026-06-22");
+        let currentWindowDays = 30; 
+
+        function updateTimelineWindow() {
+            const dropdown = document.getElementById("timelineView");
+            currentWindowDays = parseInt(dropdown.value);
+            render();
+        }
 
         function render() {
             const ganttBody = document.getElementById("ganttBody");
@@ -161,21 +215,15 @@
             ganttBody.innerHTML = "";
             header.innerHTML = "";
 
-            // Find date bounds
-            let dates = [];
-            tasks.forEach(t => {
-                dates.push(new Date(t.start));
-                dates.push(new Date(t.end));
-            });
-            const minDate = new Date(Math.min(...dates));
-            const maxDate = new Date(Math.max(...dates));
-            const totalDays = ((maxDate - minDate) / (1000 * 60 * 60 * 24)) + 1;
+            // Calculate active timeline frame limit
+            const maxTimelineDate = new Date(minDate);
+            maxTimelineDate.setDate(maxTimelineDate.getDate() + currentWindowDays - 1);
 
-            /* 1. BUILD DATE LABELS (Forming the top timeline ruler) */
-            const totalSteps = 6; 
-            const stepDays = Math.ceil(totalDays / totalSteps);
+            /* 1. BUILD DATE LABELS */
+            const totalLabels = 6; 
+            const stepDays = Math.ceil(currentWindowDays / totalLabels);
 
-            for (let i = 0; i < totalDays; i += stepDays) {
+            for (let i = 0; i < currentWindowDays; i += stepDays) {
                 let d = new Date(minDate);
                 d.setDate(d.getDate() + i);
                 
@@ -183,46 +231,57 @@
                 label.className = "date-label";
                 label.innerText = d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });
                 
-                // Position label accurately using percentages
-                label.style.left = (i / totalDays * 100) + "%";
+                label.style.left = (i / currentWindowDays * 100) + "%";
                 header.appendChild(label);
             }
 
-            /* 2. BUILD ROWS (Task label on left, matching bar on right) */
+            /* 2. BUILD ROWS */
             tasks.forEach(t => {
                 const tr = document.createElement("tr");
 
-                // Sticky Left Cell
+                // Fixed task column on the left
                 const tdTask = document.createElement("td");
                 tdTask.className = "td-task";
                 tdTask.innerText = t.name;
                 tr.appendChild(tdTask);
 
-                // Timeline Bar Cell
+                // Timeline bar track on the right
                 const tdTimeline = document.createElement("td");
                 tdTimeline.className = "td-timeline";
 
                 const area = document.createElement("div");
                 area.className = "bar-area";
 
-                // Date Math
-                const startOffset = (new Date(t.start) - minDate) / (1000 * 60 * 60 * 24);
-                const duration = ((new Date(t.end) - new Date(t.start)) / (1000 * 60 * 60 * 24)) + 1;
+                // Date tracking logic
+                const taskStart = new Date(t.start);
+                const taskEnd = new Date(t.end);
 
-                // Create Bar
-                const bar = document.createElement("div");
-                bar.className = "bar " + t.status.toLowerCase().replace(" ", "");
-                bar.style.left = (startOffset / totalDays * 100) + "%";
-                bar.style.width = (duration / totalDays * 100) + "%";
-                bar.innerText = t.status;
+                // Check if task falls within the selected viewport window
+                if (taskEnd >= minDate && taskStart <= maxTimelineDate) {
+                    // Bound the visual bar to the visible window space
+                    const visualStart = taskStart < minDate ? minDate : taskStart;
+                    const visualEnd = taskEnd > maxTimelineDate ? maxTimelineDate : taskEnd;
 
-                area.appendChild(bar);
+                    const startOffset = (visualStart - minDate) / (1000 * 60 * 60 * 24);
+                    const duration = ((visualEnd - visualStart) / (1000 * 60 * 60 * 24)) + 1;
+
+                    const bar = document.createElement("div");
+                    bar.className = "bar " + t.status.toLowerCase().replace(" ", "");
+                    bar.style.left = (startOffset / currentWindowDays * 100) + "%";
+                    bar.style.width = (duration / currentWindowDays * 100) + "%";
+                    bar.innerText = t.status;
+                    bar.title = `${t.name}: ${t.start} to ${t.end}`; // Tooltip reveal for clipped data
+
+                    area.appendChild(bar);
+                }
+
                 tdTimeline.appendChild(area);
                 tr.appendChild(tdTimeline);
                 ganttBody.appendChild(tr);
             });
         }
 
+        // Run on initial load
         render();
     </script>
 </body>
