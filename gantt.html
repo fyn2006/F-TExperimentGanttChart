@@ -1,68 +1,317 @@
-<section class="gantt-section">
-  <h2>Project Gantt Chart</h2>
-
-  <div class="gantt-chart">
-    <div class="gantt-header task">Task</div>
-    <div class="gantt-header">W1</div>
-    <div class="gantt-header">W2</div>
-    <div class="gantt-header">W3</div>
-    <div class="gantt-header">W4</div>
-    <div class="gantt-header">W5</div>
-    <div class="gantt-header">W6</div>
-
-    <div class="task">Literature Review</div>
-    <div class="bar" style="grid-column: 2 / 4;">Review sources</div>
-
-    <div class="task">Experimental Design</div>
-    <div class="bar" style="grid-column: 3 / 5;">Plan setup</div>
-
-    <div class="task">Equipment Setup</div>
-    <div class="bar" style="grid-column: 4 / 6;">Build/test</div>
-
-    <div class="task">Sample Preparation</div>
-    <div class="bar" style="grid-column: 5 / 7;">Prepare soil</div>
-
-    <div class="task">Testing</div>
-    <div class="bar" style="grid-column: 6 / 8;">Collect data</div>
-  </div>
-</section>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>F-T Experiment Gantt Chart</title>
 
 <style>
-  .gantt-section {
-    max-width: 900px;
-    margin: 40px auto;
-    font-family: Arial, sans-serif;
-  }
+body{
+    font-family:Arial,sans-serif;
+    margin:20px;
+    background:#f5f5f5;
+}
 
-  .gantt-chart {
-    display: grid;
-    grid-template-columns: 220px repeat(6, 1fr);
-    gap: 6px;
-    align-items: center;
-  }
+h1{
+    text-align:center;
+}
 
-  .gantt-header {
-    font-weight: bold;
-    text-align: center;
-    background: #222;
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-  }
+.container{
+    display:flex;
+    gap:20px;
+}
 
-  .task {
-    font-weight: bold;
-    background: #f1f1f1;
-    padding: 10px;
-    border-radius: 6px;
-  }
+.controls{
+    width:45%;
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
 
-  .bar {
-    background: #4f8cff;
-    color: white;
-    padding: 10px;
-    border-radius: 20px;
-    text-align: center;
-    grid-row: auto;
-  }
+.chart-container{
+    width:55%;
+    background:white;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    border:1px solid #ddd;
+    padding:6px;
+}
+
+input, select{
+    width:100%;
+    box-sizing:border-box;
+}
+
+button{
+    padding:8px 15px;
+    margin-top:10px;
+    cursor:pointer;
+}
+
+.gantt-row{
+    display:flex;
+    align-items:center;
+    margin:8px 0;
+}
+
+.task-label{
+    width:180px;
+    font-size:14px;
+}
+
+.timeline{
+    position:relative;
+    width:700px;
+    height:28px;
+    background:#eee;
+    border-radius:5px;
+}
+
+.bar{
+    position:absolute;
+    height:100%;
+    border-radius:5px;
+}
+
+.complete{
+    background:#4CAF50;
+}
+
+.progress{
+    background:#2196F3;
+}
+
+.notstarted{
+    background:#9E9E9E;
+}
+
+.date-header{
+    display:flex;
+    margin-left:180px;
+    width:700px;
+    font-size:12px;
+}
+
+.date-header div{
+    flex:1;
+    text-align:center;
+}
 </style>
+</head>
+
+<body>
+
+<h1>Freeze-Thaw Experiment Gantt Chart</h1>
+
+<div class="container">
+
+<div class="controls">
+
+<table id="taskTable">
+<thead>
+<tr>
+<th>Task</th>
+<th>Start</th>
+<th>End</th>
+<th>Status</th>
+<th></th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<button onclick="addTask()">Add Task</button>
+
+</div>
+
+<div class="chart-container">
+
+<div id="dateHeader" class="date-header"></div>
+
+<div id="ganttChart"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let tasks = [
+{
+name:"Obtain Pipe Cap",
+start:"2026-06-22",
+end:"2026-06-26",
+status:"In Progress"
+},
+{
+name:"Assemble Apparatus",
+start:"2026-06-27",
+end:"2026-07-05",
+status:"Not Started"
+},
+{
+name:"Install Bender Elements",
+start:"2026-07-06",
+end:"2026-07-12",
+status:"Not Started"
+},
+{
+name:"System Testing",
+start:"2026-07-13",
+end:"2026-07-20",
+status:"Not Started"
+}
+];
+
+function addTask(){
+    tasks.push({
+        name:"New Task",
+        start:"2026-07-01",
+        end:"2026-07-05",
+        status:"Not Started"
+    });
+    render();
+}
+
+function deleteTask(index){
+    tasks.splice(index,1);
+    render();
+}
+
+function renderTable(){
+
+    const tbody = document.querySelector("#taskTable tbody");
+    tbody.innerHTML="";
+
+    tasks.forEach((task,index)=>{
+
+        const row=document.createElement("tr");
+
+        row.innerHTML=`
+        <td><input value="${task.name}"
+            onchange="tasks[${index}].name=this.value;render()"></td>
+
+        <td><input type="date" value="${task.start}"
+            onchange="tasks[${index}].start=this.value;render()"></td>
+
+        <td><input type="date" value="${task.end}"
+            onchange="tasks[${index}].end=this.value;render()"></td>
+
+        <td>
+        <select onchange="tasks[${index}].status=this.value;render()">
+            <option ${task.status==="Not Started"?"selected":""}>
+                Not Started
+            </option>
+            <option ${task.status==="In Progress"?"selected":""}>
+                In Progress
+            </option>
+            <option ${task.status==="Complete"?"selected":""}>
+                Complete
+            </option>
+        </select>
+        </td>
+
+        <td>
+            <button onclick="deleteTask(${index})">X</button>
+        </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function renderChart(){
+
+    const chart=document.getElementById("ganttChart");
+    chart.innerHTML="";
+
+    const dates=[];
+
+    tasks.forEach(task=>{
+        dates.push(new Date(task.start));
+        dates.push(new Date(task.end));
+    });
+
+    const minDate=new Date(Math.min(...dates));
+    const maxDate=new Date(Math.max(...dates));
+
+    const totalDays=
+        (maxDate-minDate)/(1000*60*60*24)+1;
+
+    const header=document.getElementById("dateHeader");
+    header.innerHTML="";
+
+    for(let i=0;i<totalDays;i++){
+
+        const d=new Date(minDate);
+        d.setDate(d.getDate()+i);
+
+        const div=document.createElement("div");
+        div.innerText=(d.getMonth()+1)+"/"+d.getDate();
+
+        header.appendChild(div);
+    }
+
+    tasks.forEach(task=>{
+
+        const row=document.createElement("div");
+        row.className="gantt-row";
+
+        const label=document.createElement("div");
+        label.className="task-label";
+        label.innerText=task.name;
+
+        const timeline=document.createElement("div");
+        timeline.className="timeline";
+
+        const bar=document.createElement("div");
+        bar.className="bar";
+
+        if(task.status==="Complete")
+            bar.classList.add("complete");
+        else if(task.status==="In Progress")
+            bar.classList.add("progress");
+        else
+            bar.classList.add("notstarted");
+
+        const startOffset=
+            (new Date(task.start)-minDate)/
+            (1000*60*60*24);
+
+        const duration=
+            (new Date(task.end)-new Date(task.start))/
+            (1000*60*60*24)+1;
+
+        bar.style.left=(startOffset/totalDays*100)+"%";
+        bar.style.width=(duration/totalDays*100)+"%";
+
+        timeline.appendChild(bar);
+
+        row.appendChild(label);
+        row.appendChild(timeline);
+
+        chart.appendChild(row);
+    });
+}
+
+function render(){
+    renderTable();
+    renderChart();
+}
+
+render();
+
+</script>
+
+</body>
+</html>
