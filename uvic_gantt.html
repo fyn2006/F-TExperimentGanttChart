@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UVic Pot-Cover Experiment Gantt</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Inter, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+        .header {
+            padding: 16px 24px;
+            background: #002855;
+            color: white;
+            border-bottom: 4px solid #F5A623;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .subtitle { font-size: 13px; color: #cbd5e1; margin-top: 3px; }
+        .controls { display: flex; align-items: center; gap: 12px; }
+        .window-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        .window-selector label { font-size: 12px; font-weight: 600; color: #f1f5f9; }
+        .window-selector select {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: white;
+            font-family: Inter, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #002855;
+            cursor: pointer;
+        }
+        .btn-save {
+            background: #F5A623;
+            color: #002855;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-save:hover { background: #e0921b; }
+        .app-layout {
+            display: flex;
+            max-width: 1600px;
+            margin: 24px auto;
+            padding: 0 24px;
+            gap: 24px;
+        }
+        .editor-panel {
+            width: 360px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+        }
+        .editor-panel h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #002855;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+        .task-list-wrapper { max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+        .task-edit-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .task-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .task-edit-card label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .task-edit-card input[type="text"],
+        .task-edit-card input[type="date"],
+        .task-edit-card select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: Inter, sans-serif;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+        .btn-add {
+            background: #002855;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        .btn-add:hover { background: #001833; }
+        .btn-delete {
+            background: #BA0C2F;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-delete:hover { background: #8c0720; }
+        .chart-container {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+            height: fit-content;
+        }
+        .table-wrapper { overflow-x: auto; position: relative; }
+        .gantt-table { width: 100%; min-width: 800px; border-collapse: collapse; }
+        .th-task, .td-task {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 2;
+            width: 200px;
+            min-width: 200px;
+            padding: 16px;
+            text-align: left;
+            box-sizing: border-box;
+        }
+        .th-task {
+            background: #f8fafc;
+            font-weight: 700;
+            font-size: 13px;
+            color: #002855;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .td-task {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            box-shadow: 4px 0 8px -4px rgba(0,0,0,0.05);
+        }
+        .th-timeline, .td-timeline { padding: 16px; box-sizing: border-box; }
+        .th-timeline {
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+            height: 54px;
+        }
+        .td-timeline { border-bottom: 1px solid #f1f5f9; }
+        .date-label {
+            position: absolute;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            bottom: 6px;
+        }
+        .bar-area {
+            position: relative;
+            height: 34px;
+            background: #f1f5f9;
+            border-radius: 6px;
+            width: 100%;
+        }
+        .bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            box-sizing: border-box;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .s-inprogress { background: #002855; color: #fff; }
+        .s-notstarted { background: #BA0C2F; color: #fff; }
+        .s-complete   { background: #F5A623; color: #002855; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <div class="title">University of Victoria</div>
+        <div class="subtitle">Pot-Cover Experiment Gantt Chart System</div>
+    </div>
+    <div class="controls">
+        <div class="window-selector">
+            <label for="timelineView">View Window:</label>
+            <select id="timelineView" onchange="updateTimelineWindow()">
+                <option value="14">2 Weeks</option>
+                <option value="30">1 Month</option>
+                <option value="60" selected>2 Months (Fits All)</option>
+                <option value="90">3 Months</option>
+            </select>
+        </div>
+        <button class="btn-save" onclick="saveToStorage()">Save Changes</button>
+    </div>
+</div>
+
+<div class="app-layout">
+    <div class="editor-panel">
+        <h3>Modify Task Properties</h3>
+        <div id="editorFormContainer" class="task-list-wrapper"></div>
+        <button class="btn-add" onclick="addNewTask()">+ Add New Task</button>
+    </div>
+
+    <div class="chart-container">
+        <div class="table-wrapper">
+            <table class="gantt-table">
+                <thead>
+                    <tr>
+                        <th class="th-task">Task Name</th>
+                        <th class="th-timeline">
+                            <div id="timelineHeader" style="position:relative; height:100%;"></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="ganttBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const defaultTasks = [
+        {name: "Obtain Pipe Cap",          start: "2026-06-22", end: "2026-06-26", status: "In Progress"},
+        {name: "Assemble Apparatus",       start: "2026-06-27", end: "2026-07-05", status: "Not Started"},
+        {name: "Install Bender Elements",  start: "2026-07-06", end: "2026-07-12", status: "Not Started"},
+        {name: "System Testing",           start: "2026-07-13", end: "2026-07-20", status: "Not Started"},
+        {name: "Run Experiment",           start: "2026-07-21", end: "2026-07-31", status: "Not Started"},
+        {name: "Process Data",             start: "2026-08-01", end: "2026-08-10", status: "Not Started"}
+    ];
+
+    let tasks = [];
+    let currentWindowDays = 60;
+
+    // FIX: was parseInt(parts[]) — missing index 2
+    function parseLocalDate(dateString) {
+        const parts = dateString.split('-');
+        return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+
+    function initData() {
+        const saved = localStorage.getItem('uvic_gantt_tasks');
+        if (saved) {
+            tasks = JSON.parse(saved);
+        } else {
+            tasks = JSON.parse(JSON.stringify(defaultTasks));
+        }
+    }
+
+    function saveToStorage() {
+        localStorage.setItem('uvic_gantt_tasks', JSON.stringify(tasks));
+        alert("Success! Project schedule saved to browser memory.");
+    }
+
+    function updateTimelineWindow() {
+        currentWindowDays = parseInt(document.getElementById("timelineView").value);
+        renderGanttChartOnly();
+    }
+
+    function updateTaskData(index, field, value) {
+        tasks[index][field] = value;
+        renderGanttChartOnly();
+    }
+
+    function addNewTask() {
+        tasks.push({
+            name: "New Experiment Stage",
+            start: "2026-06-22",
+            end: "2026-06-30",
+            status: "Not Started"
+        });
+        render();
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        render();
+    }
+
+    function escapeHtml(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function buildEditorForm() {
+        const container = document.getElementById("editorFormContainer");
+        container.innerHTML = "";
+
+        tasks.forEach((t, index) => {
+            const card = document.createElement("div");
+            card.className = "task-edit-card";
+
+            // Header row
+            const cardHeader = document.createElement("div");
+            cardHeader.className = "task-card-header";
+
+            const labelNum = document.createElement("label");
+            labelNum.innerText = "Task #" + (index + 1);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.className = "btn-delete";
+            deleteBtn.innerText = "Delete";
+            deleteBtn.onclick = () => deleteTask(index);
+
+            cardHeader.appendChild(labelNum);
+            cardHeader.appendChild(deleteBtn);
+
+            // Name field
+            const labelName = document.createElement("label");
+            labelName.innerText = "Task Name";
+            const inputName = document.createElement("input");
+            inputName.type = "text";
+            inputName.value = t.name;
+            inputName.oninput = (e) => {
+                updateTaskData(index, 'name', e.target.value);
+                const lbl = document.getElementById("task-label-" + index);
+                if (lbl) lbl.innerText = e.target.value;
+            };
+
+            // Start date field
+            const labelStart = document.createElement("label");
+            labelStart.innerText = "Start Date";
+            const inputStart = document.createElement("input");
+            inputStart.type = "date";
+            inputStart.value = t.start;
+            inputStart.onchange = (e) => updateTaskData(index, 'start', e.target.value);
+
+            // End date field
+            const labelEnd = document.createElement("label");
+            labelEnd.innerText = "End Date";
+            const inputEnd = document.createElement("input");
+            inputEnd.type = "date";
+            inputEnd.value = t.end;
+            inputEnd.onchange = (e) => updateTaskData(index, 'end', e.target.value);
+
+            // Status field
+            const labelStatus = document.createElement("label");
+            labelStatus.innerText = "Status";
+            const selectStatus = document.createElement("select");
+            ["Not Started", "In Progress", "Complete"].forEach(opt => {
+                const o = document.createElement("option");
+                o.value = opt;
+                o.innerText = opt;
+                if (t.status === opt) o.selected = true;
+                selectStatus.appendChild(o);
+            });
+            selectStatus.onchange = (e) => updateTaskData(index, 'status', e.target.value);
+
+            card.appendChild(cardHeader);
+            card.appendChild(labelName);
+            card.appendChild(inputName);
+            card.appendChild(labelStart);
+            card.appendChild(inputStart);
+            card.appendChild(labelEnd);
+            card.appendChild(inputEnd);
+            card.appendChild(labelStatus);
+            card.appendChild(selectStatus);
+            container.appendChild(card);
+        });
+    }
+
+    function renderGanttChartOnly() {
+        const ganttBody = document.getElementById("ganttBody");
+        const header = document.getElementById("timelineHeader");
+        ganttBody.innerHTML = "";
+        header.innerHTML = "";
+        if (tasks.length === 0) return;
+
+        const allDates = [];
+        tasks.forEach(t => {
+            if (t.start) allDates.push(parseLocalDate(t.start));
+            if (t.end)   allDates.push(parseLocalDate(t.end));
+        });
+        if (allDates.length === 0) return;
+
+        const minDate = new Date(Math.min(...allDates));
+        const maxTimelineDate = new Date(minDate);
+        maxTimelineDate.setDate(maxTimelineDate.getDate() + currentWindowDays - 1);
+
+        // Draw date labels
+        const totalLabels = 6;
+        const stepDays = Math.ceil(currentWindowDays / totalLabels);
+        for (let i = 0; i < currentWindowDays; i += stepDays) {
+            const d = new Date(minDate);
+            d.setDate(d.getDate() + i);
+            const label = document.createElement("div");
+            label.className = "date-label";
+            label.innerText = d.toLocaleDateString("en-CA", {month: "short", day: "numeric"});
+            label.style.left = (i / currentWindowDays * 100) + "%";
+            header.appendChild(label);
+        }
+
+        // Draw bars
+        tasks.forEach((t, index) => {
+            const tr = document.createElement("tr");
+
+            const tdTask = document.createElement("td");
+            tdTask.className = "td-task";
+            tdTask.id = "task-label-" + index;
+            tdTask.innerText = t.name;
+            tr.appendChild(tdTask);
+
+            const tdTimeline = document.createElement("td");
+            tdTimeline.className = "td-timeline";
+            const area = document.createElement("div");
+            area.className = "bar-area";
+
+            if (t.start && t.end) {
+                const taskStart = parseLocalDate(t.start);
+                const taskEnd   = parseLocalDate(t.end);
+
+                if (taskEnd >= minDate && taskStart <= maxTimelineDate) {
+                    const visualStart = taskStart < minDate ? minDate : taskStart;
+                    const visualEnd   = taskEnd > maxTimelineDate ? maxTimelineDate : taskEnd;
+
+                    const startOffset = (visualStart - minDate) / (1000 * 60 * 60 * 24);
+                    const duration    = ((visualEnd - visualStart) / (1000 * 60 * 60 * 24)) + 1;
+
+                    const bar = document.createElement("div");
+
+                    // FIX: use /g flag so ALL spaces are replaced (e.g. "Not Started" -> "notstarted")
+                    const statusClass = "s-" + t.status.toLowerCase().replace(/ /g, "");
+                    bar.className = "bar " + statusClass;
+                    bar.style.left  = (startOffset / currentWindowDays * 100) + "%";
+                    bar.style.width = (duration    / currentWindowDays * 100) + "%";
+                    bar.innerText   = t.status;
+                    bar.title       = t.name + ": " + t.start + " to " + t.end;
+                    area.appendChild(bar);
+                }
+            }
+
+            tdTimeline.appendChild(area);
+            tr.appendChild(tdTimeline);
+            ganttBody.appendChild(tr);
+        });
+    }
+
+    function render() {
+        buildEditorForm();
+        renderGanttChartOnly();
+    }
+
+    initData();
+    render();
+</script>
+
+</body>
+</html>
