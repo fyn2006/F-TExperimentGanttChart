@@ -8,61 +8,120 @@
         body {
             margin: 0;
             font-family: Inter, sans-serif;
-            background: #f6f7fb;
-            color: #1e293b;
+            background: #f8fafc;
+            color: #0f172a;
         }
-        /* HEADER */
+        /* HEADER (UVic Blue & Gold Strip Theme) */
         .header {
-            padding: 16px 22px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 24px;
+            background: #002855; /* UVic Dark Blue */
+            color: white;
+            border-bottom: 4px solid #F5A623; /* UVic Gold */
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
         .title {
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
         .subtitle {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 2px;
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-top: 3px;
         }
-        /* CONTROLS */
+        /* TIMELINE DROPDOWN PANEL */
         .controls {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #f1f5f9;
-            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 14px;
             border-radius: 8px;
+            backdrop-filter: blur(4px);
         }
         .controls label {
             font-size: 12px;
             font-weight: 600;
-            color: #475569;
+            color: #f1f5f9;
         }
         .controls select {
             padding: 6px 10px;
             border-radius: 6px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid rgba(255,255,255,0.2);
             background: white;
             font-family: Inter, sans-serif;
             font-size: 13px;
-            font-weight: 500;
-            color: #1e293b;
+            font-weight: 600;
+            color: #002855;
             cursor: pointer;
         }
-        /* MAIN CHART AREA */
-        .chart-container {
-            max-width: 1200px;
+        /* APPLICATION WORKSPACE LAYOUT */
+        .app-layout {
+            display: flex;
+            max-width: 1600px;
             margin: 24px auto;
+            padding: 0 24px;
+            gap: 24px;
+        }
+        /* LEFT TASK CONFIGURATION MANAGEMENT EDITOR */
+        .editor-panel {
+            width: 380px;
             background: white;
             border-radius: 12px;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        .editor-panel h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #002855;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+        .task-edit-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .task-edit-card label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .task-edit-card input[type="text"],
+        .task-edit-card input[type="date"],
+        .task-edit-card select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: Inter, sans-serif;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+        /* RIGHT VISUAL CHART AREA */
+        .chart-container {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             overflow: hidden;
+            height: fit-content;
         }
         /* SCROLLABLE TABLE WRAPPER */
         .table-wrapper {
@@ -71,7 +130,7 @@
         }
         .gantt-table {
             width: 100%;
-            min-width: 1000px;
+            min-width: 800px;
             border-collapse: collapse;
         }
         /* STICKY LEFT COLUMN FOR TASKS */
@@ -80,22 +139,23 @@
             left: 0;
             background: white;
             z-index: 2;
-            width: 220px;
-            min-width: 220px;
+            width: 200px;
+            min-width: 200px;
             padding: 16px;
             text-align: left;
             box-sizing: border-box;
         }
         .th-task {
             background: #f8fafc;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 13px;
-            color: #475569;
+            color: #002855;
             border-bottom: 2px solid #e2e8f0;
         }
         .td-task {
-            font-weight: 500;
+            font-weight: 600;
             font-size: 14px;
+            color: #334155;
             border-bottom: 1px solid #f1f5f9;
             box-shadow: 4px 0 8px -4px rgba(0,0,0,0.05);
         }
@@ -108,7 +168,7 @@
             background: #f8fafc;
             border-bottom: 2px solid #e2e8f0;
             position: relative;
-            height: 50px;
+            height: 54px;
         }
         .td-timeline {
             border-bottom: 1px solid #f1f5f9;
@@ -118,14 +178,14 @@
             position: absolute;
             font-size: 11px;
             color: #64748b;
-            font-weight: 500;
+            font-weight: 600;
             transform: translateX(-50%);
             white-space: nowrap;
         }
-        /* BAR AREA */
+        /* BAR TRACK GRAPHICS */
         .bar-area {
             position: relative;
-            height: 32px;
+            height: 34px;
             background: #f1f5f9;
             border-radius: 6px;
             width: 100%;
@@ -140,16 +200,18 @@
             box-sizing: border-box;
             color: white;
             font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            transition: all 0.2s ease;
         }
-        .notstarted { background: #94a3b8; }
-        .inprogress { background: #2563eb; }
-        .complete   { background: #16a34a; }
+        /* BRANDED UVIC THEME STATUS BADGES */
+        .inprogress { background: #002855; color: #fff; }                 /* UVic Corporate Blue */
+        .notstarted { background: #BA0C2F; color: #fff; }                 /* UVic Accent Red */
+        .complete   { background: #F5A623; color: #002855; }              /* UVic Vibrant Gold */
     </style>
 </head>
 <body>
@@ -157,38 +219,49 @@
     <div class="header">
         <div>
             <div class="title">University of Victoria</div>
-            <div class="subtitle">Pot-Cover Experiment Gantt Chart</div>
+            <div class="subtitle">Pot-Cover Experiment Gantt Chart System</div>
         </div>
         <div class="controls">
             <label for="timelineView">Timeline Window:</label>
             <select id="timelineView" onchange="updateTimelineWindow()">
                 <option value="14">2 Weeks</option>
-                <option value="30" selected>1 Month (Default)</option>
-                <option value="60">2 Months</option>
+                <option value="30">1 Month</option>
+                <option value="60" selected>2 Months (Fits All Tasks)</option>
             </select>
         </div>
     </div>
 
-    <div class="chart-container">
-        <div class="table-wrapper">
-            <table class="gantt-table">
-                <thead>
-                    <tr>
-                        <th class="th-task">Task Name</th>
-                        <th class="th-timeline">
-                            <div id="timelineHeader"></div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="ganttBody">
-                    <!-- JavaScript inserts rows here -->
-                </tbody>
-            </table>
+    <div class="app-layout">
+        <!-- CHRONOLOGICAL DATA EDITOR SIDEBAR -->
+        <div class="editor-panel">
+            <h3>Manage Experiment Tasks</h3>
+            <div id="editorFormContainer">
+                <!-- Javascript maps data here -->
+            </div>
+        </div>
+
+        <!-- VISUAL DIAGRAM TRACK -->
+        <div class="chart-container">
+            <div class="table-wrapper">
+                <table class="gantt-table">
+                    <thead>
+                        <tr>
+                            <th class="th-task">Task Name</th>
+                            <th class="th-timeline">
+                                <div id="timelineHeader"></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="ganttBody">
+                        <!-- JavaScript rendering element hook -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // Project dataset updated with the two new requested tasks
+        // Core Project State Array Engine
         let tasks = [
             {name:"Obtain Pipe Cap", start:"2026-06-22", end:"2026-06-26", status:"In Progress"},
             {name:"Assemble Apparatus", start:"2026-06-27", end:"2026-07-05", status:"Not Started"},
@@ -198,91 +271,30 @@
             {name:"Process Data", start:"2026-08-01", end:"2026-08-10", status:"Not Started"}
         ];
 
-        // Global timeline settings
+        // Fixed project anchor timeline frame start point
         let minDate = new Date("2026-06-22");
-        let currentWindowDays = 30; 
+        let currentWindowDays = 60; 
 
+        // Trigger dynamic view window resizing state updates
         function updateTimelineWindow() {
             const dropdown = document.getElementById("timelineView");
             currentWindowDays = parseInt(dropdown.value);
             render();
         }
 
-        function render() {
-            const ganttBody = document.getElementById("ganttBody");
-            const header = document.getElementById("timelineHeader");
-            
-            ganttBody.innerHTML = "";
-            header.innerHTML = "";
-
-            // Calculate active timeline frame limit
-            const maxTimelineDate = new Date(minDate);
-            maxTimelineDate.setDate(maxTimelineDate.getDate() + currentWindowDays - 1);
-
-            /* 1. BUILD DATE LABELS */
-            const totalLabels = 6; 
-            const stepDays = Math.ceil(currentWindowDays / totalLabels);
-
-            for (let i = 0; i < currentWindowDays; i += stepDays) {
-                let d = new Date(minDate);
-                d.setDate(d.getDate() + i);
-                
-                let label = document.createElement("div");
-                label.className = "date-label";
-                label.innerText = d.toLocaleDateString("en-CA", { month: "short", day: "numeric" });
-                
-                label.style.left = (i / currentWindowDays * 100) + "%";
-                header.appendChild(label);
-            }
-
-            /* 2. BUILD ROWS */
-            tasks.forEach(t => {
-                const tr = document.createElement("tr");
-
-                // Fixed task column on the left
-                const tdTask = document.createElement("td");
-                tdTask.className = "td-task";
-                tdTask.innerText = t.name;
-                tr.appendChild(tdTask);
-
-                // Timeline bar track on the right
-                const tdTimeline = document.createElement("td");
-                tdTimeline.className = "td-timeline";
-
-                const area = document.createElement("div");
-                area.className = "bar-area";
-
-                // Date tracking logic
-                const taskStart = new Date(t.start);
-                const taskEnd = new Date(t.end);
-
-                // Check if task falls within the selected viewport window
-                if (taskEnd >= minDate && taskStart <= maxTimelineDate) {
-                    // Bound the visual bar to the visible window space
-                    const visualStart = taskStart < minDate ? minDate : taskStart;
-                    const visualEnd = taskEnd > maxTimelineDate ? maxTimelineDate : taskEnd;
-
-                    const startOffset = (visualStart - minDate) / (1000 * 60 * 60 * 24);
-                    const duration = ((visualEnd - visualStart) / (1000 * 60 * 60 * 24)) + 1;
-
-                    const bar = document.createElement("div");
-                    bar.className = "bar " + t.status.toLowerCase().replace(" ", "");
-                    bar.style.left = (startOffset / currentWindowDays * 100) + "%";
-                    bar.style.width = (duration / currentWindowDays * 100) + "%";
-                    bar.innerText = t.status;
-                    bar.title = `${t.name}: ${t.start} to ${t.end}`; // Tooltip reveal for clipped data
-
-                    area.appendChild(bar);
-                }
-
-                tdTimeline.appendChild(area);
-                tr.appendChild(tdTimeline);
-                ganttBody.appendChild(tr);
-            });
+        // Live modification monitor pipeline to sync local object array values on change
+        function updateTaskData(index, field, value) {
+            tasks[index][field] = value;
+            renderGanttChartOnly(); // Redraw only the visual bars to preserve text focus
         }
 
-        // Run on initial load
-        render();
-    </script>
-</body>
-</html>
+        // Main generator method to parse interface forms
+        function buildEditorForm() {
+            const container = document.getElementById("editorFormContainer");
+            container.innerHTML = "";
+
+            tasks.forEach((t, index) => {
+                const card = document.createElement("div");
+                card.className = "task-edit-card";
+
+                // Title Parameter Input Field Element
