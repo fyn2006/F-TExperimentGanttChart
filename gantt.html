@@ -2,32 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Project Gantt Chart</title>
+<title>Gantt Chart</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 body{
-    font-family:Inter, sans-serif;
     margin:0;
+    font-family:Inter, sans-serif;
     background:#f6f7fb;
-    color:#111;
 }
 
 .header{
-    padding:20px 30px;
-    font-size:20px;
+    padding:18px 24px;
+    font-size:18px;
     font-weight:600;
     background:white;
     border-bottom:1px solid #e5e7eb;
 }
 
+/* layout */
 .container{
     display:flex;
     height:calc(100vh - 60px);
 }
 
-/* LEFT PANEL */
+/* LEFT */
 .left{
     width:420px;
     background:white;
@@ -37,45 +37,45 @@ body{
 
 .task-row{
     display:grid;
-    grid-template-columns: 1fr 120px 120px 100px;
+    grid-template-columns: 1fr 110px 110px 110px;
+    gap:6px;
     padding:10px;
-    border-bottom:1px solid #f0f0f0;
-    align-items:center;
-    font-size:13px;
-}
-
-.task-row input, .task-row select{
-    width:95%;
-    padding:5px;
+    border-bottom:1px solid #f1f1f1;
     font-size:12px;
 }
 
-/* RIGHT PANEL */
+.task-row input, .task-row select{
+    font-size:12px;
+    padding:4px;
+}
+
+/* RIGHT */
 .right{
     flex:1;
     overflow:auto;
     padding:20px;
 }
 
-/* TIMELINE */
+/* timeline header */
 .timeline-header{
     display:flex;
     margin-left:200px;
-    font-size:12px;
+    font-size:11px;
     color:#666;
-    margin-bottom:10px;
+    margin-bottom:8px;
 }
 
 .timeline-header div{
     flex:1;
     text-align:center;
+    min-width:80px; /* FIX: prevents overlap */
 }
 
+/* gantt rows */
 .gantt-row{
     display:flex;
     align-items:center;
     margin-bottom:10px;
-    position:relative;
 }
 
 .label{
@@ -84,12 +84,14 @@ body{
     padding-right:10px;
 }
 
+/* bar area */
 .bar-area{
     position:relative;
     flex:1;
-    height:28px;
+    height:26px;
     background:#f1f5f9;
     border-radius:8px;
+    min-width:600px; /* FIX: prevents compression overlap */
 }
 
 .bar{
@@ -102,14 +104,7 @@ body{
 .progress{ background:#2563eb; }
 .complete{ background:#16a34a; }
 
-.today-line{
-    position:absolute;
-    top:0;
-    bottom:0;
-    width:2px;
-    background:#ef4444;
-}
-
+/* button */
 button{
     margin:10px;
     padding:8px 12px;
@@ -128,13 +123,13 @@ button{
 
 <div class="container">
 
-<!-- LEFT -->
+<!-- LEFT PANEL -->
 <div class="left">
 <button onclick="addTask()">+ Add Task</button>
 <div id="taskList"></div>
 </div>
 
-<!-- RIGHT -->
+<!-- RIGHT PANEL -->
 <div class="right">
 <div id="timelineHeader" class="timeline-header"></div>
 <div id="gantt"></div>
@@ -145,34 +140,10 @@ button{
 <script>
 
 let tasks = [
-{
-name:"Obtain Pipe Cap",
-start:"2026-06-22",
-end:"2026-06-26",
-status:"In Progress",
-progress:30
-},
-{
-name:"Assemble Apparatus",
-start:"2026-06-27",
-end:"2026-07-05",
-status:"Not Started",
-progress:0
-},
-{
-name:"Install Bender Elements",
-start:"2026-07-06",
-end:"2026-07-12",
-status:"Not Started",
-progress:0
-},
-{
-name:"System Testing",
-start:"2026-07-13",
-end:"2026-07-20",
-status:"Not Started",
-progress:0
-}
+{name:"Obtain Pipe Cap", start:"2026-06-22", end:"2026-06-26", status:"In Progress"},
+{name:"Assemble Apparatus", start:"2026-06-27", end:"2026-07-05", status:"Not Started"},
+{name:"Install Bender Elements", start:"2026-07-06", end:"2026-07-12", status:"Not Started"},
+{name:"System Testing", start:"2026-07-13", end:"2026-07-20", status:"Not Started"}
 ];
 
 function addTask(){
@@ -180,23 +151,21 @@ function addTask(){
         name:"New Task",
         start:"2026-07-01",
         end:"2026-07-05",
-        status:"Not Started",
-        progress:0
+        status:"Not Started"
     });
     render();
 }
 
+/* LEFT PANEL */
 function renderLeft(){
-
-    const container = document.getElementById("taskList");
-    container.innerHTML = "";
+    const el = document.getElementById("taskList");
+    el.innerHTML="";
 
     tasks.forEach((t,i)=>{
+        const row = document.createElement("div");
+        row.className="task-row";
 
-        const div = document.createElement("div");
-        div.className="task-row";
-
-        div.innerHTML = `
+        row.innerHTML=`
         <input value="${t.name}"
         onchange="tasks[${i}].name=this.value;render()">
 
@@ -213,10 +182,11 @@ function renderLeft(){
         </select>
         `;
 
-        container.appendChild(div);
+        el.appendChild(row);
     });
 }
 
+/* RIGHT PANEL */
 function renderGantt(){
 
     const gantt = document.getElementById("gantt");
@@ -225,7 +195,7 @@ function renderGantt(){
     gantt.innerHTML="";
     header.innerHTML="";
 
-    let dates = [];
+    let dates=[];
 
     tasks.forEach(t=>{
         dates.push(new Date(t.start));
@@ -235,19 +205,19 @@ function renderGantt(){
     const min = new Date(Math.min(...dates));
     const max = new Date(Math.max(...dates));
 
-    const days = (max-min)/(1000*60*60*24)+1;
+    const totalDays = (max-min)/(1000*60*60*24)+1;
 
-    // header (monthly labels every ~7 days)
-    for(let i=0;i<days;i+=7){
+    /* FIX: weekly spacing, no overlap */
+    const step = Math.max(1, Math.floor(totalDays/8));
+
+    for(let i=0;i<totalDays;i+=step){
         let d = new Date(min);
         d.setDate(d.getDate()+i);
 
         let div = document.createElement("div");
-        div.innerText = d.toLocaleDateString("en-CA",{month:"short",day:"numeric"});
+        div.innerText = d.toLocaleDateString("en-CA",{month:"short", day:"numeric"});
         header.appendChild(div);
     }
-
-    const today = new Date();
 
     tasks.forEach(t=>{
 
@@ -267,8 +237,8 @@ function renderGantt(){
         const bar = document.createElement("div");
         bar.className="bar "+t.status.toLowerCase().replace(" ","");
 
-        bar.style.left = (startOffset/days*100)+"%";
-        bar.style.width = (duration/days*100)+"%";
+        bar.style.left = (startOffset/totalDays*100)+"%";
+        bar.style.width = (duration/totalDays*100)+"%";
 
         area.appendChild(bar);
 
@@ -277,14 +247,6 @@ function renderGantt(){
 
         gantt.appendChild(row);
     });
-
-    // TODAY LINE
-    const todayOffset = (today-min)/(1000*60*60*24);
-    const line = document.createElement("div");
-    line.className="today-line";
-    line.style.left = (todayOffset/days*100)+"%";
-
-    gantt.appendChild(line);
 }
 
 function render(){
