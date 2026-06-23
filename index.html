@@ -60,92 +60,20 @@
     border-bottom: 1px solid #eaeef3;
   }
 
-  .card p {
+  /* Non-editable text styling */
+  .static-text {
     font-size: 14px;
     color: #3a4557;
     line-height: 1.7;
-    margin-bottom: 12px;
   }
 
-  .card p:last-child { margin-bottom: 0; }
-
-  /* Editable field blocks */
-  .field-block {
-    margin-bottom: 20px;
+  .static-text p {
+    margin-bottom: 14px;
   }
 
-  .field-block:last-child { margin-bottom: 0; }
-
-  .field-block label {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #64748b;
-    margin-bottom: 8px;
+  .static-text p:last-child {
+    margin-bottom: 0;
   }
-
-  .field-block textarea {
-    width: 100%;
-    min-height: 120px;
-    padding: 12px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    color: #1a1a1a;
-    line-height: 1.65;
-    resize: vertical;
-    background: #f8fafc;
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .field-block textarea:focus {
-    outline: none;
-    border-color: #002855;
-    background: white;
-  }
-
-  .field-block textarea::placeholder {
-    color: #94a3b8;
-    font-style: italic;
-  }
-
-  /* Save indicator */
-  .save-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #eaeef3;
-  }
-
-  .save-status {
-    font-size: 12px;
-    color: #64748b;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .save-status.visible { opacity: 1; }
-
-  .btn-save {
-    background: #002855;
-    color: white;
-    border: none;
-    padding: 9px 20px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-    transition: background 0.15s;
-  }
-
-  .btn-save:hover { background: #001833; }
 
   /* Document links grid */
   .doc-grid {
@@ -266,47 +194,21 @@
 
 <div class="container">
 
-  <!-- Research question -->
+  <!-- Research Objective (Uneditable) -->
   <div class="card">
-    <h2>Research question</h2>
-    <div class="field-block">
-      <label>Primary research question</label>
-      <textarea id="rq-primary" placeholder="Enter the primary research question for this experiment…"></textarea>
-    </div>
-    <div class="field-block">
-      <label>Hypotheses / expected outcomes</label>
-      <textarea id="rq-hypotheses" placeholder="Describe the expected outcome or working hypotheses…"></textarea>
-    </div>
-    <div class="save-row">
-      <span class="save-status" id="rq-status">Saved</span>
-      <button class="btn-save" onclick="saveSection('rq')">Save</button>
-    </div>
-  </div>
-
-  <!-- Background information -->
-  <div class="card">
-    <h2>Background information</h2>
-    <div class="field-block">
-      <label>The pot-cover effect</label>
-      <textarea id="bg-effect" placeholder="Describe the pot-cover effect — what it is, why it occurs, and its relevance to geotechnical investigation…"></textarea>
-    </div>
-    <div class="field-block">
-      <label>Bender elements & piezoelectric sensing</label>
-      <textarea id="bg-bender" placeholder="Explain the bender element technique, how piezoelectric transducers are used to measure shear wave velocity, and the significance of Vs measurements…"></textarea>
-    </div>
-    <div class="field-block">
-      <label>Literature & prior work</label>
-      <textarea id="bg-literature" placeholder="Summarise relevant literature, previous studies, or theoretical foundations this experiment builds on…"></textarea>
-    </div>
-    <div class="save-row">
-      <span class="save-status" id="bg-status">Saved</span>
-      <button class="btn-save" onclick="saveSection('bg')">Save</button>
+    <h2>Research Objective</h2>
+    <div class="static-text">
+      <p>“Canopy effect” of “Pot-Cover effect” refers to ascending vapor condensation near a barrier and lead to water accumulation near the barrier.</p>
+      <p>In geotechnical engineering, some pavements in cold regions with relatively dry climate and low water tables still suffer from weakened base and subgrade due to water accumulation. The cause of such problem could be this “Canopy effect”, as the vapor condense under the asphalt layer, wetting the soils under the layer.</p>
+      <p>This water accumulation with poor drainage could weaken the soil. During freezing season, the water aids the formation of ice lenses in soil, thus could induce significant frost heaves to the road or runway.</p>
+      <p>This research aims to investigate a wicking nonwoven geotextile’s efficacy in addressing this issue by actively draining water out of unsaturated soil, thus mitigating the water accumulation and frost heave problem.</p>
+      <p>This proposed lab test would provide valuable insight into the canopy effect in unsaturated coarse-grained soil, as well as the efficacy of the wicking nonwoven geotextile in managing the vapor induced moisture. Hopefully this test would quantify the benefits of a wicking nonwoven geotextile for mitigating the canopy effect.</p>
     </div>
   </div>
 
   <!-- Project documents -->
   <div class="card">
-    <h2>Project documents</h2>
+    <h2>Project Documents</h2>
     <div class="doc-grid">
 
       <a class="doc-link" href="uvic_gantt.html">
@@ -341,9 +243,9 @@
           </svg>
         </div>
         <div class="doc-meta">
-          <div class="doc-title">Piezoelectric wiring guide</div>
-          <div class="doc-desc">Circuit schematic, safety checklist, and measurement concept</div>
-          <span class="badge badge-active">Reference</span>
+          <div class="doc-title">Wiring Guide</div>
+          <div class="doc-desc">Bender element instrumentation, sensor wiring, and DAQ setup</div>
+          <span class="badge badge-active">Ready</span>
         </div>
         <span class="doc-arrow">→</span>
       </a>
@@ -353,40 +255,9 @@
 
 </div>
 
-<footer>University of Victoria &nbsp;·&nbsp; Pot-Cover Effect Experiment</footer>
-
-<script>
-  const FIELDS = {
-    rq: ['rq-primary', 'rq-hypotheses'],
-    bg: ['bg-effect', 'bg-bender', 'bg-literature']
-  };
-
-  // Load saved content on startup
-  Object.values(FIELDS).flat().forEach(id => {
-    const saved = localStorage.getItem('uvic_' + id);
-    if (saved) document.getElementById(id).value = saved;
-  });
-
-  function saveSection(section) {
-    FIELDS[section].forEach(id => {
-      localStorage.setItem('uvic_' + id, document.getElementById(id).value);
-    });
-    const status = document.getElementById(section + '-status');
-    status.classList.add('visible');
-    setTimeout(() => status.classList.remove('visible'), 2000);
-  }
-
-  // Auto-save on input (debounced)
-  let timers = {};
-  Object.entries(FIELDS).forEach(([section, ids]) => {
-    ids.forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        clearTimeout(timers[section]);
-        timers[section] = setTimeout(() => saveSection(section), 1200);
-      });
-    });
-  });
-</script>
+<footer>
+  <p>&copy; 2026 University of Victoria — Geotechnical Research Group</p>
+</footer>
 
 </body>
 </html>
