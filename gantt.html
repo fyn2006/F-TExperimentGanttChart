@@ -1,145 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>F-T Experiment Gantt Chart</title>
+<title>Project Gantt Chart</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
 body{
-    font-family:Arial,sans-serif;
-    margin:20px;
-    background:#f5f5f5;
+    font-family:Inter, sans-serif;
+    margin:0;
+    background:#f6f7fb;
+    color:#111;
 }
 
-h1{
-    text-align:center;
+.header{
+    padding:20px 30px;
+    font-size:20px;
+    font-weight:600;
+    background:white;
+    border-bottom:1px solid #e5e7eb;
 }
 
 .container{
     display:flex;
-    gap:20px;
+    height:calc(100vh - 60px);
 }
 
-.controls{
-    width:45%;
+/* LEFT PANEL */
+.left{
+    width:420px;
     background:white;
-    padding:15px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    border-right:1px solid #e5e7eb;
+    overflow:auto;
 }
 
-.chart-container{
-    width:55%;
-    background:white;
-    padding:15px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
-    overflow-x:auto;
+.task-row{
+    display:grid;
+    grid-template-columns: 1fr 120px 120px 100px;
+    padding:10px;
+    border-bottom:1px solid #f0f0f0;
+    align-items:center;
+    font-size:13px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
+.task-row input, .task-row select{
+    width:95%;
+    padding:5px;
+    font-size:12px;
 }
 
-th, td{
-    border:1px solid #ddd;
-    padding:6px;
+/* RIGHT PANEL */
+.right{
+    flex:1;
+    overflow:auto;
+    padding:20px;
 }
 
-input, select{
-    width:100%;
-    box-sizing:border-box;
+/* TIMELINE */
+.timeline-header{
+    display:flex;
+    margin-left:200px;
+    font-size:12px;
+    color:#666;
+    margin-bottom:10px;
 }
 
-button{
-    padding:8px 15px;
-    margin-top:10px;
-    cursor:pointer;
+.timeline-header div{
+    flex:1;
+    text-align:center;
 }
 
 .gantt-row{
     display:flex;
     align-items:center;
-    margin:8px 0;
-}
-
-.task-label{
-    width:180px;
-    font-size:14px;
-}
-
-.timeline{
+    margin-bottom:10px;
     position:relative;
-    width:700px;
+}
+
+.label{
+    width:200px;
+    font-size:13px;
+    padding-right:10px;
+}
+
+.bar-area{
+    position:relative;
+    flex:1;
     height:28px;
-    background:#eee;
-    border-radius:5px;
+    background:#f1f5f9;
+    border-radius:8px;
 }
 
 .bar{
     position:absolute;
     height:100%;
-    border-radius:5px;
+    border-radius:8px;
 }
 
-.complete{
-    background:#4CAF50;
+.notstarted{ background:#94a3b8; }
+.progress{ background:#2563eb; }
+.complete{ background:#16a34a; }
+
+.today-line{
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:2px;
+    background:#ef4444;
 }
 
-.progress{
-    background:#2196F3;
-}
-
-.notstarted{
-    background:#9E9E9E;
-}
-
-.date-header{
-    display:flex;
-    margin-left:180px;
-    width:700px;
-    font-size:12px;
-}
-
-.date-header div{
-    flex:1;
-    text-align:center;
+button{
+    margin:10px;
+    padding:8px 12px;
+    border:none;
+    background:#111;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Freeze-Thaw Experiment Gantt Chart</h1>
+<div class="header">Freeze–Thaw Experiment Gantt Chart</div>
 
 <div class="container">
 
-<div class="controls">
-
-<table id="taskTable">
-<thead>
-<tr>
-<th>Task</th>
-<th>Start</th>
-<th>End</th>
-<th>Status</th>
-<th></th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-
-<button onclick="addTask()">Add Task</button>
-
+<!-- LEFT -->
+<div class="left">
+<button onclick="addTask()">+ Add Task</button>
+<div id="taskList"></div>
 </div>
 
-<div class="chart-container">
-
-<div id="dateHeader" class="date-header"></div>
-
-<div id="ganttChart"></div>
-
+<!-- RIGHT -->
+<div class="right">
+<div id="timelineHeader" class="timeline-header"></div>
+<div id="gantt"></div>
 </div>
 
 </div>
@@ -151,25 +149,29 @@ let tasks = [
 name:"Obtain Pipe Cap",
 start:"2026-06-22",
 end:"2026-06-26",
-status:"In Progress"
+status:"In Progress",
+progress:30
 },
 {
 name:"Assemble Apparatus",
 start:"2026-06-27",
 end:"2026-07-05",
-status:"Not Started"
+status:"Not Started",
+progress:0
 },
 {
 name:"Install Bender Elements",
 start:"2026-07-06",
 end:"2026-07-12",
-status:"Not Started"
+status:"Not Started",
+progress:0
 },
 {
 name:"System Testing",
 start:"2026-07-13",
 end:"2026-07-20",
-status:"Not Started"
+status:"Not Started",
+progress:0
 }
 ];
 
@@ -178,135 +180,116 @@ function addTask(){
         name:"New Task",
         start:"2026-07-01",
         end:"2026-07-05",
-        status:"Not Started"
+        status:"Not Started",
+        progress:0
     });
     render();
 }
 
-function deleteTask(index){
-    tasks.splice(index,1);
-    render();
-}
+function renderLeft(){
 
-function renderTable(){
+    const container = document.getElementById("taskList");
+    container.innerHTML = "";
 
-    const tbody = document.querySelector("#taskTable tbody");
-    tbody.innerHTML="";
+    tasks.forEach((t,i)=>{
 
-    tasks.forEach((task,index)=>{
+        const div = document.createElement("div");
+        div.className="task-row";
 
-        const row=document.createElement("tr");
+        div.innerHTML = `
+        <input value="${t.name}"
+        onchange="tasks[${i}].name=this.value;render()">
 
-        row.innerHTML=`
-        <td><input value="${task.name}"
-            onchange="tasks[${index}].name=this.value;render()"></td>
+        <input type="date" value="${t.start}"
+        onchange="tasks[${i}].start=this.value;render()">
 
-        <td><input type="date" value="${task.start}"
-            onchange="tasks[${index}].start=this.value;render()"></td>
+        <input type="date" value="${t.end}"
+        onchange="tasks[${i}].end=this.value;render()">
 
-        <td><input type="date" value="${task.end}"
-            onchange="tasks[${index}].end=this.value;render()"></td>
-
-        <td>
-        <select onchange="tasks[${index}].status=this.value;render()">
-            <option ${task.status==="Not Started"?"selected":""}>
-                Not Started
-            </option>
-            <option ${task.status==="In Progress"?"selected":""}>
-                In Progress
-            </option>
-            <option ${task.status==="Complete"?"selected":""}>
-                Complete
-            </option>
+        <select onchange="tasks[${i}].status=this.value;render()">
+            <option ${t.status==="Not Started"?"selected":""}>Not Started</option>
+            <option ${t.status==="In Progress"?"selected":""}>In Progress</option>
+            <option ${t.status==="Complete"?"selected":""}>Complete</option>
         </select>
-        </td>
-
-        <td>
-            <button onclick="deleteTask(${index})">X</button>
-        </td>
         `;
 
-        tbody.appendChild(row);
+        container.appendChild(div);
     });
 }
 
-function renderChart(){
+function renderGantt(){
 
-    const chart=document.getElementById("ganttChart");
-    chart.innerHTML="";
+    const gantt = document.getElementById("gantt");
+    const header = document.getElementById("timelineHeader");
 
-    const dates=[];
-
-    tasks.forEach(task=>{
-        dates.push(new Date(task.start));
-        dates.push(new Date(task.end));
-    });
-
-    const minDate=new Date(Math.min(...dates));
-    const maxDate=new Date(Math.max(...dates));
-
-    const totalDays=
-        (maxDate-minDate)/(1000*60*60*24)+1;
-
-    const header=document.getElementById("dateHeader");
+    gantt.innerHTML="";
     header.innerHTML="";
 
-    for(let i=0;i<totalDays;i++){
+    let dates = [];
 
-        const d=new Date(minDate);
+    tasks.forEach(t=>{
+        dates.push(new Date(t.start));
+        dates.push(new Date(t.end));
+    });
+
+    const min = new Date(Math.min(...dates));
+    const max = new Date(Math.max(...dates));
+
+    const days = (max-min)/(1000*60*60*24)+1;
+
+    // header (monthly labels every ~7 days)
+    for(let i=0;i<days;i+=7){
+        let d = new Date(min);
         d.setDate(d.getDate()+i);
 
-        const div=document.createElement("div");
-        div.innerText=(d.getMonth()+1)+"/"+d.getDate();
-
+        let div = document.createElement("div");
+        div.innerText = d.toLocaleDateString("en-CA",{month:"short",day:"numeric"});
         header.appendChild(div);
     }
 
-    tasks.forEach(task=>{
+    const today = new Date();
 
-        const row=document.createElement("div");
+    tasks.forEach(t=>{
+
+        const row = document.createElement("div");
         row.className="gantt-row";
 
-        const label=document.createElement("div");
-        label.className="task-label";
-        label.innerText=task.name;
+        const label = document.createElement("div");
+        label.className="label";
+        label.innerText=t.name;
 
-        const timeline=document.createElement("div");
-        timeline.className="timeline";
+        const area = document.createElement("div");
+        area.className="bar-area";
 
-        const bar=document.createElement("div");
-        bar.className="bar";
+        const startOffset = (new Date(t.start)-min)/(1000*60*60*24);
+        const duration = (new Date(t.end)-new Date(t.start))/(1000*60*60*24)+1;
 
-        if(task.status==="Complete")
-            bar.classList.add("complete");
-        else if(task.status==="In Progress")
-            bar.classList.add("progress");
-        else
-            bar.classList.add("notstarted");
+        const bar = document.createElement("div");
+        bar.className="bar "+t.status.toLowerCase().replace(" ","");
 
-        const startOffset=
-            (new Date(task.start)-minDate)/
-            (1000*60*60*24);
+        bar.style.left = (startOffset/days*100)+"%";
+        bar.style.width = (duration/days*100)+"%";
 
-        const duration=
-            (new Date(task.end)-new Date(task.start))/
-            (1000*60*60*24)+1;
-
-        bar.style.left=(startOffset/totalDays*100)+"%";
-        bar.style.width=(duration/totalDays*100)+"%";
-
-        timeline.appendChild(bar);
+        area.appendChild(bar);
 
         row.appendChild(label);
-        row.appendChild(timeline);
+        row.appendChild(area);
 
-        chart.appendChild(row);
+        gantt.appendChild(row);
     });
+
+    // TODAY LINE
+    const todayOffset = (today-min)/(1000*60*60*24);
+    const line = document.createElement("div");
+    line.className="today-line";
+    line.style.left = (todayOffset/days*100)+"%";
+
+    gantt.appendChild(line);
 }
 
 function render(){
-    renderTable();
-    renderChart();
+    renderLeft();
+    renderGantt();
 }
 
 render();
