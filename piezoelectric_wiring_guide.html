@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>University of Victoria — Piezoelectric Wiring Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, Helvetica, sans-serif; background: #f0f2f5; color: #1a1a1a; font-size: 15px; line-height: 1.65; }
+  header { background: #002855; color: white; padding: 28px 40px; border-bottom: 4px solid #F5A623; }
+  header h1 { font-size: 26px; font-weight: 700; }
+  header p { margin-top: 4px; font-size: 14px; color: #a8bdd1; }
+  .container { max-width: 960px; margin: 36px auto; padding: 0 32px; display: flex; flex-direction: column; gap: 24px; }
+  .card { background: white; border-radius: 10px; border: 1px solid #dde3ec; padding: 28px 32px; }
+  .card h2 { font-size: 17px; font-weight: 700; color: #002855; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #eaeef3; }
+  .card.warning { border-left: 5px solid #c0392b; border-radius: 0 10px 10px 0; background: #fff8f8; }
+  .card.warning h2 { color: #c0392b; border-bottom-color: #fcdcdc; }
+  .card.warning ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .card.warning li { padding-left: 22px; position: relative; font-size: 14px; color: #3a1010; }
+  .card.warning li::before { content: "—"; position: absolute; left: 0; color: #c0392b; font-weight: 700; }
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .checklist li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: #2d3748; }
+  .check-box { width: 18px; height: 18px; border: 2px solid #b0bacb; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+  .card p { font-size: 14px; color: #3a4557; line-height: 1.7; margin-bottom: 12px; }
+  .card p:last-child { margin-bottom: 0; }
+  .schematic-wrap { background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 24px 16px; overflow-x: auto; }
+  svg { display: block; }
+  .code-wrap { background: #0d1117; border-radius: 8px; border: 1px solid #30363d; padding: 20px 24px; overflow-x: auto; }
+  .code-wrap pre { margin: 0; font-family: 'Courier New', Courier, monospace; font-size: 13px; line-height: 1.7; color: #e6edf3; white-space: pre; }
+  .c  { color: #8b949e; }
+  .k  { color: #ff7b72; }
+  .t2 { color: #79c0ff; }
+  .n  { color: #ffa657; }
+  .s  { color: #a5d6ff; }
+  .code-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .code-lang { background: #21262d; color: #8b949e; font-size: 12px; font-family: monospace; padding: 3px 10px; border-radius: 4px; }
+  footer { text-align: center; font-size: 13px; color: #8a9ab0; padding: 28px 0 40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>University of Victoria</h1>
+  <p>Piezoelectric Wiring Guide — Bender Element System</p>
+</header>
+
+<div class="container">
+
+  <!-- Safety Warning -->
+  <div class="card warning">
+    <h2>Safety information</h2>
+    <ul>
+      <li>Never connect +20 V directly to an Arduino pin — this will permanently damage the microcontroller.</li>
+      <li>Verify transistor orientation and pinout against the component datasheet before powering.</li>
+      <li>Confirm each piezoelectric element is rated for the applied voltage.</li>
+      <li>Use a current-limited bench supply during initial testing.</li>
+      <li>Disconnect all power before modifying wiring.</li>
+      <li>Inspect for short circuits before energising the system.</li>
+      <li>Confirm oscilloscope probe ratings match the expected signal voltages.</li>
+      <li>Measure supply voltages with a multimeter before connecting any sensitive electronics.</li>
+    </ul>
+  </div>
+
+  <!-- Schematic -->
+  <div class="card">
+    <h2>Circuit schematic</h2>
+    <div class="schematic-wrap">
+      <svg width="100%" viewBox="0 0 900 580" role="img">
+        <title>Piezoelectric bender element schematic — Tx driver (left) and Rx sensor (right) fully separated</title>
+        <desc>Left: Arduino pin 8 drives Tx piezo through 1kΩ resistor and transistor Q1. 5kΩ pull-up connects collector to +20V. Tx piezo bottom and Q1 emitter each have their own GND symbol. Oscilloscope CH1 taps the collector node. Right: Rx piezo top connects only to oscilloscope CH2 probe. Rx piezo bottom has its own GND symbol. The two circuits share no electrical connection.</desc>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- LEFT CIRCUIT — TRANSMITTER (Tx)        -->
+        <!-- ══════════════════════════════════════ -->
+
+        <text x="230" y="28" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">TRANSMITTER (Tx) — driven circuit</text>
+
+        <!-- +20V label -->
+        <text x="318" y="50" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#c0392b">+20 V</text>
+
+        <!-- 5kΩ pull-up vertical zigzag: y=55 → y=110 -->
+        <line x1="318" y1="55" x2="318" y2="62" stroke="#334155" stroke-width="1.5"/>
+        <polyline points="318,62 305,66 331,72 305,78 331,84 305,90 331,96 318,100"
+                  fill="none" stroke="#334155" stroke-width="1.5" stroke-linejoin="round"/>
+        <line x1="318" y1="100" x2="318" y2="110" stroke="#334155" stroke-width="1.5"/>
+        <text x="338" y="82" font-family="Arial,sans-serif" font-size="11" fill="#475569">5 kΩ</text>
+
+        <!-- Collector node -->
+        <circle cx="318" cy="110" r="3.5" fill="#334155"/>
+
+        <!-- Wire: collector node down to transistor top -->
+        <line x1="318" y1="110" x2="318" y2="139" stroke="#334155" stroke-width="1.5"/>
+
+        <!-- Transistor Q1 -->
+        <circle cx="318" cy="165" r="26" fill="white" stroke="#334155" stroke-width="1.5"/>
+        <text x="318" y="169" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#1e293b">Q1</text>
+
+        <!-- Emitter → Q1 GND symbol -->
+        <line x1="318" y1="191" x2="318" y2="228" stroke="#334155" stroke-width="1.5"/>
+        <line x1="300" y1="228" x2="336" y2="228" stroke="#334155" stroke-width="2"/>
+        <line x1="306" y1="236" x2="330" y2="236" stroke="#334155" stroke-width="1.5"/>
+        <line x1="312" y1="244" x2="324" y2="244" stroke="#334155" stroke-width="1"/>
+        <text x="318" y="258" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b">GND</text>
+
+        <!-- Arduino block -->
+        <rect x="18" y="120" width="148" height="110" rx="7" fill="#dbeafe" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text x="92" y="143" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Arduino</text>
+        <rect x="28" y="153" width="46" height="18" rx="3" fill="#1e3a8a"/>
+        <text x="51" y="166" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="700" fill="white">Pin 8</text>
+        <text x="82" y="166" font-family="Arial,sans-serif" font-size="10" fill="#3b5a9a">PWM out</text>
+        <rect x="28" y="182" width="46" height="18" rx="3" fill="#334155"/>
+        <text x="51" y="195" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="700" fill="white">GND</text>
+        <text x="82" y="195" font-family="Arial,sans-serif" font-size="10" fill="#3b5a9a">common</text>
+
+        <!-- Arduino Pin 8 wire → 1kΩ zigzag → transistor base -->
+        <line x1="166" y1="162" x2="210" y2="162" stroke="#334155" stroke-width="1.5"/>
+        <polyline points="210,162 214,162 217,150 222,174 227,150 232,174 237,150 242,174 247,162 264,162"
+                  fill="none" stroke="#334155" stroke-width="1.5" stroke-linejoin="round"/>
+        <text x="237" y="144" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#475569">1 kΩ</text>
+        <line x1="264" y1="162" x2="292" y2="162" stroke="#334155" stroke-width="1.5"/>
+        <line x1="292" y1="162" x2="292" y2="165" stroke="#334155" stroke-width="1.5"/>
+
+        <!-- Arduino GND → its own GND symbol -->
+        <line x1="92" y1="230" x2="92" y2="268" stroke="#334155" stroke-width="1.5"/>
+        <line x1="74" y1="268" x2="110" y2="268" stroke="#334155" stroke-width="2"/>
+        <line x1="80" y1="276" x2="104" y2="276" stroke="#334155" stroke-width="1.5"/>
+        <line x1="86" y1="284" x2="98" y2="284" stroke="#334155" stroke-width="1"/>
+        <text x="92" y="298" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b">GND</text>
+
+        <!-- Collector node → horizontal wire to Tx piezo top -->
+        <line x1="318" y1="110" x2="370" y2="110" stroke="#334155" stroke-width="1.5"/>
+
+        <!-- Tx Piezo body -->
+        <rect x="358" y="110" width="24" height="100" rx="3" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+        <line x1="358" y1="132" x2="382" y2="132" stroke="#b45309" stroke-width="0.8" opacity="0.6"/>
+        <line x1="358" y1="152" x2="382" y2="152" stroke="#b45309" stroke-width="0.8" opacity="0.6"/>
+        <line x1="358" y1="172" x2="382" y2="172" stroke="#b45309" stroke-width="0.8" opacity="0.6"/>
+        <line x1="358" y1="192" x2="382" y2="192" stroke="#b45309" stroke-width="0.8" opacity="0.6"/>
+        <text x="370" y="226" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#92400e">Tx piezo</text>
+
+        <!-- Tx piezo top node -->
+        <circle cx="370" cy="110" r="3.5" fill="#334155"/>
+
+        <!-- Tx piezo bottom → its own GND symbol -->
+        <line x1="370" y1="210" x2="370" y2="268" stroke="#334155" stroke-width="1.5"/>
+        <line x1="352" y1="268" x2="388" y2="268" stroke="#334155" stroke-width="2"/>
+        <line x1="358" y1="276" x2="382" y2="276" stroke="#334155" stroke-width="1.5"/>
+        <line x1="364" y1="284" x2="376" y2="284" stroke="#334155" stroke-width="1"/>
+        <text x="370" y="298" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b">GND</text>
+
+        <!-- CH1 oscilloscope tap from collector node -->
+        <circle cx="318" cy="110" r="4" fill="#15803d"/>
+        <line x1="318" y1="110" x2="318" y2="340" stroke="#15803d" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <rect x="208" y="340" width="220" height="56" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="1"/>
+        <text x="318" y="363" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#14532d">Oscilloscope CH1</text>
+        <text x="318" y="381" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#166534">monitors Tx signal</text>
+        <text x="322" y="106" font-family="Arial,sans-serif" font-size="10" fill="#15803d">probe</text>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- DIVIDER                                -->
+        <!-- ══════════════════════════════════════ -->
+        <line x1="490" y1="38" x2="490" y2="540" stroke="#94a3b8" stroke-width="1" stroke-dasharray="6,4"/>
+        <text x="490" y="300" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#94a3b8" transform="rotate(-90,490,300)">NOT CONNECTED</text>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- RIGHT CIRCUIT — RECEIVER (Rx)          -->
+        <!-- ══════════════════════════════════════ -->
+
+        <text x="690" y="28" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#7c3aed">RECEIVER (Rx) — sense only, no driver</text>
+
+        <!-- Rx Piezo body -->
+        <rect x="648" y="80" width="24" height="160" rx="3" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+        <line x1="648" y1="106" x2="672" y2="106" stroke="#7c3aed" stroke-width="0.8" opacity="0.6"/>
+        <line x1="648" y1="130" x2="672" y2="130" stroke="#7c3aed" stroke-width="0.8" opacity="0.6"/>
+        <line x1="648" y1="154" x2="672" y2="154" stroke="#7c3aed" stroke-width="0.8" opacity="0.6"/>
+        <line x1="648" y1="178" x2="672" y2="178" stroke="#7c3aed" stroke-width="0.8" opacity="0.6"/>
+        <line x1="648" y1="202" x2="672" y2="202" stroke="#7c3aed" stroke-width="0.8" opacity="0.6"/>
+        <line x1="648" y1="226" x2="672" y2="226" stroke="#7c3aed" stroke-width="0.8" opacity="0.6"/>
+        <text x="660" y="258" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#5b21b6">Rx piezo</text>
+
+        <!-- Rx top terminal node -->
+        <circle cx="660" cy="80" r="3.5" fill="#7c3aed"/>
+
+        <!-- Wire from Rx top → scope tap -->
+        <line x1="660" y1="80" x2="740" y2="80" stroke="#7c3aed" stroke-width="1.5"/>
+
+        <!-- CH2 scope probe tap -->
+        <circle cx="740" cy="80" r="4" fill="#15803d"/>
+        <text x="744" y="76" font-family="Arial,sans-serif" font-size="10" fill="#15803d">probe</text>
+        <line x1="740" y1="80" x2="740" y2="340" stroke="#15803d" stroke-width="1.2" stroke-dasharray="5,4"/>
+        <rect x="630" y="340" width="220" height="56" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="1"/>
+        <text x="740" y="363" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" font-weight="700" fill="#14532d">Oscilloscope CH2</text>
+        <text x="740" y="381" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#166534">monitors Rx signal</text>
+
+        <!-- Rx bottom → its own GND symbol -->
+        <line x1="660" y1="240" x2="660" y2="278" stroke="#7c3aed" stroke-width="1.5"/>
+        <line x1="642" y1="278" x2="678" y2="278" stroke="#334155" stroke-width="2"/>
+        <line x1="648" y1="286" x2="672" y2="286" stroke="#334155" stroke-width="1.5"/>
+        <line x1="654" y1="294" x2="666" y2="294" stroke="#334155" stroke-width="1"/>
+        <text x="660" y="308" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b">GND</text>
+
+        <!-- Bottom note -->
+        <text x="450" y="555" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b" font-style="italic">Tx and Rx piezos are inserted into opposite ends of the soil specimen — they share no electrical connection.</text>
+
+        <!-- Legend -->
+        <rect x="20" y="520" width="10" height="10" rx="2" fill="#fef3c7" stroke="#b45309" stroke-width="0.8"/>
+        <text x="36" y="529" font-family="Arial,sans-serif" font-size="11" fill="#475569">Tx piezo (driven)</text>
+        <rect x="180" y="520" width="10" height="10" rx="2" fill="#ede9fe" stroke="#7c3aed" stroke-width="0.8"/>
+        <text x="196" y="529" font-family="Arial,sans-serif" font-size="11" fill="#475569">Rx piezo (sense only)</text>
+        <rect x="380" y="520" width="10" height="10" rx="2" fill="#dcfce7" stroke="#15803d" stroke-width="0.8"/>
+        <text x="396" y="529" font-family="Arial,sans-serif" font-size="11" fill="#475569">Oscilloscope</text>
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- Measurement concept -->
+  <div class="card">
+    <h2>Measurement concept</h2>
+    <p>
+      The two piezoelectric elements are <strong>not electrically connected to each other</strong>. The Tx piezo is part of the driver circuit — its top terminal is driven by the transistor collector node (switched +20 V) and its bottom terminal is tied to its own GND. The Rx piezo is a passive sensor — its top terminal connects only to the oscilloscope CH2 probe, and its bottom terminal is tied to its own GND.
+    </p>
+    <p>
+      Both elements are physically inserted into opposite ends of the soil specimen. Mechanical energy generated at Tx propagates through the soil and deflects the Rx bender element, inducing a measurable voltage. The time delay between the CH1 and CH2 waveforms is used to calculate wave velocity.
+    </p>
+  </div>
+
+  <!-- Arduino code -->
+  <div class="card">
+    <h2>Arduino code</h2>
+    <p>Upload the sketch below. It uses the built-in <code>tone()</code> function to generate a continuous 1170 Hz square wave on pin 8 with no additional configuration required.</p>
+    <div class="code-wrap">
+      <div class="code-label">
+        <span class="code-lang">Arduino (.ino)</span>
+      </div>
+      <pre><span class="k">const</span> <span class="t2">int</span> <span class="n">wavePin</span> = <span class="s">8</span>; <span class="c">// Defined generic wave pin</span>
+
+<span class="t2">void</span> <span class="n">setup</span>() {
+  <span class="c">// Generate an 1170 Hz wave on digital pin 8</span>
+  <span class="n">tone</span>(<span class="n">wavePin</span>, <span class="s">1170</span>);
+}
+
+<span class="t2">void</span> <span class="n">loop</span>() {
+  <span class="c">// The wave runs continuously</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- Pre-power checklist -->
+  <div class="card">
+    <h2>Pre-power checklist</h2>
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>Confirm +20 V is isolated from all Arduino pins.</span></li>
+      <li><div class="check-box"></div><span>Confirm Arduino GND pin is connected to circuit common ground.</span></li>
+      <li><div class="check-box"></div><span>Confirm PWM signal wire runs from Arduino pin 8 to the 1 kΩ base resistor.</span></li>
+      <li><div class="check-box"></div><span>Verify Tx piezo top terminal connects to the transistor collector node; bottom terminal to its own GND.</span></li>
+      <li><div class="check-box"></div><span>Verify Rx piezo top terminal connects only to oscilloscope CH2 probe; bottom terminal to its own GND.</span></li>
+      <li><div class="check-box"></div><span>Confirm Tx and Rx piezos share no direct electrical connection.</span></li>
+      <li><div class="check-box"></div><span>Verify transistor pinout and orientation against datasheet.</span></li>
+      <li><div class="check-box"></div><span>Check piezoelectric element polarity and voltage rating.</span></li>
+      <li><div class="check-box"></div><span>Confirm oscilloscope probe connections and ratings.</span></li>
+      <li><div class="check-box"></div><span>Measure supply voltages with a multimeter before connecting electronics.</span></li>
+      <li><div class="check-box"></div><span>Inspect all wiring for shorts.</span></li>
+      <li><div class="check-box"></div><span>Set bench supply current limit before powering up.</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>University of Victoria &nbsp;·&nbsp; Piezoelectric Wiring Guide</footer>
+
+</body>
+</html>
